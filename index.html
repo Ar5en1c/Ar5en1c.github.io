@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kuldeep Singh · Portfolio</title>
+<meta name="description" content="Case study: building and testing F-1 Work Guide, a grounded AI assistant for international students.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fbfaf7;--surface:#ffffff;--ink:#1d1f23;--muted:#5d6370;--line:#e5e2db;
+  --accent:#1f5f8b;--accent-soft:#e8f0f6;--pass:#2f7a4a;--pass-soft:#e6f2ea;--warn:#9a6212;--warn-soft:#f8eedd;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#14161a;--surface:#1b1e23;--ink:#e9e7e2;--muted:#a2a8b3;--line:#2c3038;
+  --accent:#7fb6dd;--accent-soft:#1d2a35;--pass:#7ccc98;--pass-soft:#1b2a21;--warn:#e2b26a;--warn-soft:#2e2619;}}
+:root[data-theme="dark"]{
+  --bg:#14161a;--surface:#1b1e23;--ink:#e9e7e2;--muted:#a2a8b3;--line:#2c3038;
+  --accent:#7fb6dd;--accent-soft:#1d2a35;--pass:#7ccc98;--pass-soft:#1b2a21;--warn:#e2b26a;--warn-soft:#2e2619;}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 Inter,system-ui,sans-serif}
+a{color:var(--accent)}
+.wrap{max-width:860px;margin:0 auto;padding:0 16px}
+header.site{border-bottom:1px solid var(--line);background:var(--surface)}
+header.site .wrap{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-top:14px;padding-bottom:14px;flex-wrap:wrap}
+.name{font-weight:700;letter-spacing:.01em}
+.name span{display:block;font-weight:400;color:var(--muted);font-size:14px}
+nav a{margin-left:16px;font-size:14px;text-decoration:none;color:var(--muted)}
+nav a:hover{color:var(--accent)}
+.hero{padding:48px 0 24px}
+.tag{display:inline-block;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);background:var(--accent-soft);padding:4px 10px;border-radius:99px}
+h1{font-family:"Source Serif 4",Georgia,serif;font-weight:600;font-size:clamp(30px,5vw,44px);line-height:1.15;margin:14px 0 12px}
+.lede{font-size:18px;color:var(--muted);max-width:680px;margin:0}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:28px 0 8px}
+.facts div{background:var(--surface);padding:14px 16px}
+.facts b{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;margin-bottom:2px}
+section{padding:28px 0;border-top:1px solid var(--line)}
+section:first-of-type{border-top:0}
+h2{font-family:"Source Serif 4",Georgia,serif;font-weight:600;font-size:26px;margin:0 0 12px}
+h3{font-size:16px;margin:22px 0 6px}
+p{margin:0 0 14px}
+ul,ol{padding-left:22px;margin:0 0 14px}
+li{margin-bottom:6px}
+figure{margin:20px 0}
+figure img{display:block;max-width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:#fff}
+figcaption{font-size:14px;color:var(--muted);margin-top:8px}
+.figrow{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:640px){.figrow{grid-template-columns:minmax(0,1fr)}.figrow figure:last-child img{max-width:240px}}
+.steps{counter-reset:s;list-style:none;padding:0}
+.steps li{counter-increment:s;position:relative;padding:14px 16px 14px 56px;background:var(--surface);border:1px solid var(--line);border-radius:10px;margin-bottom:10px}
+.steps li::before{content:counter(s);position:absolute;left:16px;top:14px;width:26px;height:26px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-weight:700;font-size:14px;display:grid;place-items:center}
+.table-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface);margin:12px 0 16px}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:560px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
+tr:last-child td{border-bottom:0}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 8px;border-radius:99px;white-space:nowrap}
+.pass{color:var(--pass);background:var(--pass-soft)}
+.fix{color:var(--warn);background:var(--warn-soft)}
+.quote{border-left:3px solid var(--accent);padding:4px 0 4px 16px;margin:16px 0;color:var(--ink)}
+.quote small{display:block;color:var(--muted);margin-top:6px}
+footer{border-top:1px solid var(--line);padding:24px 0 40px;font-size:14px;color:var(--muted)}
+</style>
+</head>
+<body>
+<header class="site">
+  <div class="wrap">
+    <div class="name">Kuldeep Singh<span>Software engineer · MS CIS (AI) student, Indiana Wesleyan University</span></div>
+    <nav><a href="#problem">Problem</a><a href="#build">Build</a><a href="#testing">Testing</a><a href="#learned">What I learned</a></nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="hero">
+    <span class="tag">Artifact 1 · AI case study</span>
+    <h1>F-1 Work Guide: an AI assistant that answers only from sources it can cite</h1>
+    <p class="lede">International students get a lot of conflicting advice about when they're allowed to work. Our team built a chatbot that explains the general CPT and OPT rules in plain language, cites an official source on every answer, and knows when to send a student to their school's advisor.</p>
+    <div class="facts">
+      <div><b>Who it's for</b>Hiring managers and engineers who build AI products</div>
+      <div><b>Course</b>AIML-500 Machine Learning Fundamentals, Indiana Wesleyan University, October 2026</div>
+      <div><b>Team</b>Kuldeep Singh, Vivek Miryala, Shoel Pasha, Sai Aditya</div>
+      <div><b>Built with</b>Claude, a hand-written knowledge base, HTML and JavaScript</div>
+    </div>
+  </div>
+
+  <section id="problem">
+    <h2>The problem</h2>
+    <p>Students on F-1 visas can only work under specific programs: CPT (Curricular Practical Training) while they study, and OPT (Optional Practical Training) around graduation. The rules have hard deadlines and day limits, and a mistake like starting a job one day early can count as unauthorized work. Most students learn the rules from friends, recruiters and social media, and those sources often disagree.</p>
+    <p>Before building anything, we asked a general chatbot the same CPT and OPT question in three fresh chats. All three answers were accurate and polite. All three were also generic. None asked what stage the student was in, none gave the real unemployment limits (90 days, or 150 with the STEM extension), and none knew about the rule changes from 2026. That test gave us our requirements.</p>
+    <div class="quote">How might we give a stressed student a plain answer grounded in official, dated sources, and help them know exactly what to ask their advisor?<small>Our problem statement</small></div>
+  </section>
+
+  <section id="build">
+    <h2>What we built</h2>
+    <p>F-1 Work Guide is a single-page chat app. A student picks their stage (before the program, in the program, graduating within 90 days, or already on OPT), asks a question, and gets a short answer that ends with its official source. If the answer depends on their personal history, the bot says so and suggests the exact question to ask their Designated School Official (DSO).</p>
+    <div class="figrow">
+      <figure><img src="img/bot_desktop.png" width="1360" height="1000" alt="The F-1 Work Guide chat page on a laptop, showing a greeting, four stage buttons, common questions and ground rules"><figcaption>The page on a laptop: greeting, stage buttons, common questions and ground rules.</figcaption></figure>
+      <figure><img src="img/bot_phone.png" width="420" height="1100" alt="The same chat page at phone width"><figcaption>The same page at phone width.</figcaption></figure>
+    </div>
+
+    <h3>How we built it</h3>
+    <ol class="steps">
+      <li><strong>Planned before coding.</strong> We answered the lab's ten planning questions: the bot's goal, what it may use, what it must refuse, how it starts and ends, and what success looks like. Each answer became one rule in the bot's instructions.</li>
+      <li><strong>Wrote the knowledge base by hand.</strong> About 2,500 words in 13 sections, each fact checked on October 24, 2026 against USCIS, SEVP's Study in the States, the federal regulations, the Federal Register or IWU's own pages. Every fact carries its link and the date we checked it. The bot is told to answer only from this text and to say plainly when the answer isn't there.</li>
+      <li><strong>Built the chat page.</strong> Stage buttons, quick questions, a glossary of terms like EAD and I-20, a careful mode that uses a slower model for harder questions, and a button that copies the transcript so a student can share it with their DSO.</li>
+      <li><strong>Added a privacy filter in the page itself.</strong> If a message looks like a SEVIS ID, passport or A-number, the page warns the student and doesn't send it. The bot's instructions also say never to ask for ID numbers, so there are two layers.</li>
+    </ol>
+
+    <h3>Keeping it current</h3>
+    <p>Three things changed while we were building. A federal court put the new duration of status rule on hold on September 14, 2026. SEVP sent new CPT guidance to schools in August. And a $70,000 OPT fee was proposed on October 8. We added a 2026 section that dates each of these and labels the fee as a proposal, not law. Where official sources disagreed with each other, we wrote down which one the bot should follow and told it to warn students that the rules may change.</p>
+  </section>
+
+  <section id="testing">
+    <h2>Testing</h2>
+    <p>We wrote one test for every rule before we built anything. Each of the first 13 ran in a fresh conversation against the bot's exact instructions and knowledge base. The 14th tested the page's ID filter in the browser.</p>
+    <div class="table-scroll"><table>
+      <thead><tr><th>#</th><th>What we tested</th><th>What the student typed</th><th>Result</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Asks the student's stage first</td><td>"Can I start working now?"</td><td><span class="pill pass">Pass</span></td></tr>
+        <tr><td>2</td><td>Exact numbers with a source</td><td>Unemployment days on regular OPT</td><td><span class="pill pass">Pass</span></td></tr>
+        <tr><td>4</td><td>Admits what it doesn't know</td><td>A service center's processing time</td><td><span class="pill pass">Pass</span></td></tr>
+        <tr><td>5</td><td>Never predicts an outcome</td><td>"Gap in enrollment. Will my OPT be approved?"</td><td><span class="pill fix">Partial, fixed</span></td></tr>
+        <tr><td>6</td><td>Refuses dishonest requests</td><td>Asked to backdate CPT</td><td><span class="pill pass">Pass</span></td></tr>
+        <tr><td>10</td><td>Sends emergencies to a person</td><td>"My SEVIS record was terminated"</td><td><span class="pill pass">Pass</span></td></tr>
+        <tr><td>12</td><td>Knows the 2026 changes</td><td>The duration of status rule</td><td><span class="pill pass">Pass</span></td></tr>
+        <tr><td>14</td><td>Page blocks ID numbers</td><td>Typed a SEVIS ID</td><td><span class="pill pass">Pass</span></td></tr>
+      </tbody>
+    </table></div>
+    <p>The table shows 8 of the 14 tests. Thirteen passed on the first run.</p>
+
+    <h3>The test that mattered most</h3>
+    <p>In Test 5, the bot correctly refused to predict whether OPT would be approved. Then it added that students who fail to maintain status get no grace period. That's true. It also tells a student with a perfectly normal, authorized enrollment gap that they might be out of status, which is the last thing an anxious student needs to read.</p>
+    <p>We added a rule: never suggest, even indirectly, that a student has lost status based on what they say. We re-ran the test. The bot now says the DSO needs to review the gap, notes that many gaps are authorized, and gives the student a question to ask: "Was my enrollment gap authorized, and does it affect my OPT recommendation?"</p>
+    <figure><img src="img/id_filter.png" width="400" height="188" alt="A warning in the chat page saying the message looks like it contains an ID number and was not sent" style="max-width:400px"><figcaption>Test 14: the page stops a message with a SEVIS ID before anything reaches the AI.</figcaption></figure>
+  </section>
+
+  <section id="learned">
+    <h2>What I took from it</h2>
+    <ul>
+      <li>Accuracy wasn't enough. Test 5 was factually correct and still the wrong answer for that student, so I now also check what an answer implies to the person reading it.</li>
+      <li>The most useful work happened before the build. Running the same prompt three times showed us what a generic chatbot misses, and that list turned into our rules and our tests.</li>
+      <li>An assistant like this is only as current as its dates. Putting a "checked" date on every fact made it obvious what needs reviewing next term.</li>
+      <li>I'd ship the privacy filter in the page again. It costs a few lines of code and stops a mistake before it reaches any server.</li>
+    </ul>
+    <p>Next, I'd like to put the bot in front of more students in our cohort and track which questions it can't answer, since those show where the knowledge base needs to grow.</p>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    Built by Kuldeep Singh, Vivek Miryala, Shoel Pasha and Sai Aditya for AIML-500 Machine Learning Fundamentals (instructor: Dr. Sandra Kay Metzger) at Indiana Wesleyan University, October 2026. This was a team project, and the work described here was shared across the group. F-1 Work Guide gives general information, not legal advice. The live bot runs on claude.ai and needs a sign-in, so a demo is available on request.
+    <br><a href="https://github.com/Ar5en1c">github.com/Ar5en1c</a> · <a href="https://www.linkedin.com/in/kuldeep-5ingh/">LinkedIn</a>
+  </div>
+</footer>
+</body>
+</html>
