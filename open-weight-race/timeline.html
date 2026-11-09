@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Open-Weight Race</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,600;9..144,800&family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#05090a; --ink:#eef3ef; --dim:#9aa7a0; --open:#4ef0a0; --closed:#b9a6ff; --accent:#4ef0a0; --card:rgba(255,255,255,.04); --line:rgba(255,255,255,.12);
+  --serif:'Fraunces',Georgia,serif; --sans:'Space Grotesk',system-ui,-apple-system,sans-serif; --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+}
+body[data-era="y22"]{--bg:#08080c;--accent:#c9c9d6}
+body[data-era="y23"]{--bg:#041009;--accent:#4ef0a0}
+body[data-era="y24"]{--bg:#03101a;--accent:#4fd2ff}
+body[data-era="y25"]{--bg:#140507;--accent:#ff5d6c}
+body[data-era="y26"]{--bg:#110d03;--accent:#ffc94d}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.55;transition:background-color 1.4s ease;overflow-x:hidden}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:var(--accent);z-index:50;transition:background .8s}
+main{position:relative;z-index:2}
+.kicker{font-family:var(--mono);letter-spacing:.3em;text-transform:uppercase;font-size:12px;color:var(--accent)}
+.sec{max-width:1180px;margin:0 auto;padding:100px 16px 30px}
+.sec-h{font-family:var(--serif);font-size:clamp(30px,4.5vw,52px);font-weight:600;line-height:1.05;margin-top:8px}
+.lead{color:var(--dim);max-width:780px;margin:12px 0 26px;font-size:17px}
+
+/* HERO */
+.hero{position:relative;min-height:100vh;display:grid;place-items:center;text-align:center;padding:40px 16px;overflow:hidden}
+#rain{position:absolute;inset:0;width:100%;height:100%}
+.hero:after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(5,9,10,.25),rgba(5,9,10,.92) 70%);pointer-events:none}
+.hero-inner{position:relative;z-index:2;max-width:1000px}
+.hero h1{font-family:var(--serif);font-weight:800;font-size:clamp(50px,9.5vw,136px);line-height:.9;margin:18px 0 12px;letter-spacing:-.025em}
+.hero h1 .o{color:var(--open);font-style:italic;font-weight:300}
+.hero p.sub{font-size:clamp(17px,2vw,22px);color:var(--dim);max-width:760px;margin:18px auto 0}
+.dl{max-width:520px;margin:34px auto 0;text-align:left;font-family:var(--mono);font-size:12.5px;color:var(--dim);background:rgba(0,0,0,.55);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.dl .bar{height:8px;background:rgba(255,255,255,.08);border-radius:6px;margin:8px 0 6px;overflow:hidden}
+.dl .bar b{display:block;height:100%;width:0;background:var(--open);border-radius:6px}
+.dl .row{display:flex;justify-content:space-between}
+.vs{display:flex;gap:16px;justify-content:center;margin-top:26px;flex-wrap:wrap;font-size:14px}
+.vs span{padding:6px 14px;border-radius:999px;border:1px solid}
+.vs .c{color:var(--closed);border-color:#b9a6ff66}.vs .op{color:var(--open);border-color:#4ef0a066}
+
+/* EXPLAINER */
+.three{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.box{border:1px solid var(--line);background:var(--card);border-radius:18px;padding:24px}
+.box h3{font-family:var(--serif);font-size:26px;margin:6px 0 8px}
+.box p{color:#d5ddd8;font-size:15px}
+.box .eg{font-family:var(--mono);font-size:12px;color:var(--dim);margin-top:14px}
+.box.c{border-color:#b9a6ff55}.box.c .kicker{color:var(--closed)}
+.box.o{border-color:#4ef0a055}.box.o .kicker{color:var(--open)}
+.box.f{border-color:#ffc94d55}.box.f .kicker{color:#ffc94d}
+.lock{font-size:34px;line-height:1}
+
+/* RACE TRACK */
+.track{background:rgba(0,0,0,.4);border:1px solid var(--line);border-radius:18px;padding:18px}
+.track svg{width:100%;height:auto;display:block}
+.track text{font-family:var(--mono)}
+.gapnums{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:16px}
+.gapnums div{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+.gapnums b{display:block;font:700 40px var(--mono);color:var(--accent);letter-spacing:-.03em}
+.gapnums span{color:var(--dim);font-size:14px}
+.draw{stroke-dasharray:1400;stroke-dashoffset:1400;transition:stroke-dashoffset 2.2s ease}
+.track.go .draw{stroke-dashoffset:0}
+.pop{opacity:0;transition:opacity .6s ease}
+.track.go .pop{opacity:1}
+
+/* FILTERS */
+.filters{position:sticky;top:3px;z-index:20;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;padding:14px 16px;background:linear-gradient(var(--bg) 70%,transparent);transition:background 1.4s}
+.chip{font:500 13px var(--sans);color:var(--ink);background:var(--card);border:1px solid var(--line);padding:7px 14px;border-radius:999px;cursor:pointer;transition:.2s}
+.chip:hover{border-color:var(--accent)}
+.chip.on{background:var(--accent);color:#111;border-color:var(--accent)}
+
+/* CHAPTERS */
+.chapter{max-width:1180px;margin:0 auto;padding:110px 16px 30px}
+.ch-head{text-align:center;margin-bottom:56px}
+.ch-head .big{font:800 clamp(70px,14vw,190px)/.85 var(--serif);color:transparent;-webkit-text-stroke:1.5px var(--accent);letter-spacing:-.04em}
+.ch-head h2{font-family:var(--serif);font-size:clamp(32px,5vw,62px);font-weight:600;line-height:1;margin:6px 0 10px}
+.ch-head p{max-width:740px;margin:0 auto;color:var(--dim);font-size:18px}
+.spine{position:relative}
+.spine:before{content:"";position:absolute;left:50%;top:0;bottom:0;width:2px;background:linear-gradient(transparent,var(--accent),transparent);transform:translateX(-50%);opacity:.6}
+.card{position:relative;width:calc(50% - 48px);background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 24px;margin-bottom:26px;
+  opacity:0;transform:translateY(40px);transition:opacity .7s ease,transform .7s ease,border-color .3s,box-shadow .3s;cursor:pointer}
+.card.in{opacity:1;transform:none}
+.card:nth-child(odd){margin-right:auto}.card:nth-child(even){margin-left:auto}
+.card:hover{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),0 20px 50px rgba(0,0,0,.4)}
+.card:after{content:"";position:absolute;top:30px;width:14px;height:14px;border-radius:50%;background:var(--bg);border:3px solid var(--accent);transition:background 1.4s}
+.card:nth-child(odd):after{right:-56px}.card:nth-child(even):after{left:-56px}
+.card.closedcard{border-style:dashed}
+.card .top{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.card .date{font:700 22px var(--mono);color:var(--accent);letter-spacing:-.02em}
+.card .flag{font-family:var(--mono);font-size:11px;color:var(--dim);letter-spacing:.08em;text-transform:uppercase}
+.card h3{font-family:var(--serif);font-size:24px;font-weight:600;line-height:1.15;margin:10px 0 6px}
+.card .who{font-size:13px;color:var(--accent);margin-bottom:10px}
+.card p{color:#d8dfda;font-size:15.5px}
+.card .why{max-height:0;overflow:hidden;transition:max-height .5s ease,margin .5s;font-size:14.5px;border-left:3px solid var(--accent);padding-left:12px}
+.card.open .why{max-height:260px;margin-top:14px}
+body.ctx .card .why{max-height:400px;margin-top:14px}
+body.ctx .card .tg{display:none}
+.chip.ctxbtn{border-style:dashed}
+.card .more{font-family:var(--mono);font-size:11px;color:var(--dim);margin-top:12px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.pill{display:inline-block;font-family:var(--mono);font-size:10.5px;padding:2px 8px;border-radius:999px;border:1px solid var(--line);text-transform:uppercase;letter-spacing:.06em}
+.lic-open{color:var(--open);border-color:#4ef0a055}.lic-custom{color:#ffd48a;border-color:#ffd48a55}.lic-closed{color:var(--closed);border-color:#b9a6ff55}.lic-event{color:#ff9aa5;border-color:#ff9aa555}
+.card.hide{display:none}
+
+/* SHOCK */
+.shock{max-width:1000px;margin:0 auto 70px;border:1px solid #ff5d6c66;border-radius:20px;padding:30px;background:linear-gradient(135deg,rgba(255,93,108,.12),rgba(255,93,108,.02));display:grid;grid-template-columns:1.1fr 1fr;gap:30px;align-items:center}
+.shock h3{font-family:var(--serif);font-size:34px;line-height:1.05;margin:8px 0 12px}
+.shock p{color:#f1d6d9;font-size:15.5px}
+.bars{display:flex;gap:22px;align-items:flex-end;height:240px;padding:0 10px;border-bottom:1px solid #ffffff33}
+.bars div{flex:1;border-radius:10px 10px 0 0;position:relative;height:0;transition:height 1.6s cubic-bezier(.2,.8,.2,1)}
+.bars div span{position:absolute;top:-26px;left:0;right:0;text-align:center;font:700 16px var(--mono)}
+.bars .a{background:#76b900}.bars .b{background:#ff5d6c}
+.barlbl{display:flex;gap:22px;padding:8px 10px 0;font-family:var(--mono);font-size:12px;color:var(--dim)}
+.barlbl span{flex:1;text-align:center}
+.drop{font:800 64px/1 var(--mono);color:#ff5d6c;letter-spacing:-.04em;margin-top:18px}
+
+/* MEASURE */
+.measure{max-width:1100px;margin:0 auto 70px;border:1px solid #ffc94d55;border-radius:20px;padding:26px;background:linear-gradient(135deg,rgba(255,201,77,.10),rgba(255,201,77,.02))}
+.mgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin:14px 0}
+.mgrid div{background:rgba(0,0,0,.35);border:1px solid var(--line);border-radius:14px;padding:14px}
+.mgrid b{display:block;font:700 32px var(--mono);color:#ffc94d;letter-spacing:-.03em}
+.mgrid span{display:block;font-size:13.5px;color:#e8e2cf;margin-top:4px}
+.mgrid i{display:block;font-style:normal;font-family:var(--mono);font-size:11px;color:var(--dim);margin-top:8px}
+.measure p{color:var(--dim);font-size:15px}
+@media (max-width:860px){.mgrid{grid-template-columns:1fr 1fr}}
+/* SCOREBOARD */
+.board{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.team{border:1px solid var(--line);border-radius:16px;padding:18px;background:var(--card)}
+.team h4{font-family:var(--serif);font-size:24px}
+.team .ct{font-family:var(--mono);font-size:12px;color:var(--accent);margin-bottom:10px}
+.team li{list-style:none;font-size:14px;padding:5px 0;border-top:1px solid #ffffff10;display:flex;justify-content:space-between;gap:8px}
+.team li i{font-style:normal;color:var(--dim);font-family:var(--mono);font-size:12px;text-align:right}
+
+/* WHY */
+.why4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.w{border-top:3px solid var(--accent);background:var(--card);border-radius:0 0 14px 14px;padding:18px}
+.w b{font-family:var(--serif);font-size:21px;display:block;margin-bottom:6px}
+.w p{color:#d5ddd8;font-size:14.5px}
+.now{max-width:900px;margin:40px auto 0;text-align:center;font-family:var(--serif);font-size:clamp(22px,3vw,32px);line-height:1.3}
+.now em{color:var(--accent)}
+
+.sources{max-width:1000px;margin:0 auto;padding:60px 16px 80px;color:var(--dim);font-size:14px}
+.sources h3{font-family:var(--serif);color:var(--ink);font-size:26px;margin-bottom:14px}
+.sources li{margin:0 0 10px 0;padding-left:2em;text-indent:-2em;list-style:none}
+footer{text-align:center;padding:30px 16px 60px;color:var(--dim);font-family:var(--mono);font-size:12px}
+
+@media (max-width:860px){
+  .three,.gapnums,.board,.why4{grid-template-columns:1fr}
+  .shock{grid-template-columns:1fr}
+  .spine:before{left:14px}
+  .card{width:calc(100% - 40px);margin-left:40px!important}
+  .card:after{left:-33px!important;right:auto!important}
+}
+@media print{
+  #rain,.filters,#progress{display:none!important}
+  body{background:#fff!important;color:#111}
+  .card{opacity:1!important;transform:none!important;break-inside:avoid;background:#fff;border-color:#bbb}
+  .card .why{max-height:none!important;margin-top:10px}
+  .card p{color:#222}
+  .hero{min-height:auto}
+  .draw{stroke-dashoffset:0!important}.pop{opacity:1!important}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.card{opacity:1;transform:none}.draw{stroke-dashoffset:0}.pop{opacity:1}}
+</style>
+</head>
+<body data-era="y22" class="ctx">
+<div id="progress"></div>
+<div id="glow" aria-hidden="true"></div>
+<main>
+<section class="hero">
+  <canvas id="rain"></canvas>
+  <canvas id="orb" aria-hidden="true"></canvas>
+  <div class="hero-inner">
+    <div class="kicker">A history of artificial intelligence &middot; Part 2 of 2</div>
+    <h1>The <span class="o">Open-Weight</span><br>Race</h1>
+    <div class="kicker" style="color:var(--dim)">November 2022 &nbsp;&rarr;&nbsp; October 2026</div>
+    <p class="sub">After ChatGPT, the best AI lived behind a paywall on someone else's servers. Then a model leaked, a hobbyist got it running on a laptop, and a race started over who gets to download the brain. This timeline follows that one race.</p>
+    <div class="dl">
+      <div class="row"><span id="dlname">llama-65b &middot; weights</span><span id="dlpct">0%</span></div>
+      <div class="bar"><b id="dlbar"></b></div>
+      <div class="row"><span id="dlnote">connecting to peers...</span><span>March 2023</span></div>
+    </div>
+    <div class="vs"><span class="c">Closed: you rent it through an app or API</span><span class="op">Open weights: you download it and run it yourself</span></div>
+  </div>
+</section>
+
+<section class="sec" id="explain">
+  <div class="kicker">First, the words</div>
+  <h2 class="sec-h">What "open" means here</h2>
+  <p class="lead">A trained model is mostly a giant file of numbers called weights. Whoever holds that file can run the model, change it, and build on it. The race is about who gives that file away.</p>
+  <div class="three">
+    <div class="box c"><div class="lock">&#128274;</div><div class="kicker">Closed</div><h3>Rent it</h3><p>You send text to the company's servers and get an answer back. You never see the weights. The company decides the price, the rules and when the model changes.</p><div class="eg">GPT-4, GPT-5, Claude, Gemini</div></div>
+    <div class="box o"><div class="lock">&#11015;</div><div class="kicker">Open weights</div><h3>Download it</h3><p>The weights are posted for anyone to download. You can run the model on your own computer, fine-tune it, or ship it in a product, within the terms of its license.</p><div class="eg">Llama, Mistral, Qwen, DeepSeek, gpt-oss</div></div>
+    <div class="box f"><div class="lock">&#128214;</div><div class="kicker">Fully open source</div><h3>Rebuild it</h3><p>Weights plus the training data details and code, so anyone could rebuild the model from scratch. The Open Source Initiative wrote this standard down in October 2024. Most "open" models don't meet it.</p><div class="eg">AI2's OLMo, EleutherAI's Pythia</div></div>
+  </div>
+</section>
+
+<section class="sec" id="race">
+  <div class="kicker">The scoreboard</div>
+  <h2 class="sec-h">The gap is closing</h2>
+  <p class="lead">Each arrow joins a closed model to the first open model that roughly matched it on the benchmarks the labs reported. The time it took open models to catch up went from more than a year to about four months.</p>
+  <div class="track" id="track"><svg id="tracksvg" viewBox="0 0 1000 330" role="img" aria-label="Race chart: closed models on top, matching open models below, with months between them"></svg></div>
+  <div class="gapnums">
+    <div><b>12 mo</b><span>ChatGPT's GPT-3.5 (Nov 2022) to Mixtral 8x7B (Dec 2023)</span></div>
+    <div><b>16 mo</b><span>GPT-4 (Mar 2023) to Llama 3.1 405B (Jul 2024)</span></div>
+    <div><b>4 mo</b><span>OpenAI o1-preview (Sep 2024) to DeepSeek-R1 (Jan 2025)</span></div>
+  </div>
+  <p style="font-size:12px;color:var(--dim);margin-top:10px">Pairs are approximate and based on each lab's reported benchmark results. Epoch AI estimated in 2024 that the best open models trailed the best closed ones by about a year.</p>
+</section>
+
+<div class="filters" id="filters"></div>
+<div id="chapters"></div>
+
+<section class="sec" id="teams">
+  <div class="kicker">The players</div>
+  <h2 class="sec-h">Who is racing</h2>
+  <p class="lead">The open side started as an American story with Meta out front. By 2025, Chinese labs were releasing many of the strongest open models, and in 2026 they released most of them.</p>
+  <div class="board" id="board"></div>
+</section>
+
+<section class="sec" id="whyit" data-era="y26">
+  <div class="kicker">Why this race matters</div>
+  <h2 class="sec-h">What's at stake</h2>
+  <div class="why4">
+    <div class="w"><b>Cost</b><p>Free weights put a ceiling on what closed labs can charge. DeepSeek's low prices in 2024 set off a price war among Chinese AI companies.</p></div>
+    <div class="w"><b>Privacy and control</b><p>A model on your own laptop or phone doesn't send your data anywhere. Hospitals, banks and governments care about that a lot.</p></div>
+    <div class="w"><b>Safety</b><p>Once weights are out, anyone can strip the safety training. The US government studied this in 2024 and chose to watch closely instead of restricting open models.</p></div>
+    <div class="w"><b>Geopolitics</b><p>Open models spread a country's technology around the world. The US AI Action Plan in 2025 called for more American open models for that reason.</p></div>
+  </div>
+  <p class="now">In 2023 the question was whether open models could keep up at all.<br>By October 2026 the best open model sits a few months behind the best closed one, and the question is <em>how long any closed lead lasts.</em></p>
+</section>
+
+<section class="sources">
+  <h3>Sources</h3>
+  <ul>
+    <li>Artificial Analysis. (2026, July 17). <i>Kimi K3 achieves #3 in the Artificial Analysis Intelligence Index</i>. https://artificialanalysis.ai/articles/kimi-k3-achieves-3-in-the-artificial-analysis-intelligence-index-comparable-to-opus-4-8-and-gpt-5-5</li>
+    <li>Center for AI Standards and Innovation. (2026, May 1). <i>CAISI evaluation of DeepSeek V4 Pro</i>. National Institute of Standards and Technology. https://www.nist.gov/news-events/news/2026/05/caisi-evaluation-deepseek-v4-pro</li>
+    <li>DeepLearning.AI. (2026, October 2). An unexpected open weights leader. <i>The Batch</i>. https://www.deeplearning.ai/the-batch/an-unexpected-open-weights-leader</li>
+    <li>Emberson, L. (2026, January 2). <i>Chinese AI models have lagged the US frontier by 7 months on average since 2023</i>. Epoch AI. https://epoch.ai/data-insights/us-vs-china-eci</li>
+    <li>Epoch AI. (2026, May 29). <i>Open-closed ECI gap</i> [Data insight]. https://epoch.ai/data-insights/open-closed-eci-gap</li>
+    <li>Raschka, S. (2026). <i>A dream of spring for open-weight LLMs: 10 architectures from Jan-Feb 2026</i>. https://magazine.sebastianraschka.com/p/a-dream-of-spring-for-open-weight</li>
+    <li>Stanford Institute for Human-Centered Artificial Intelligence. (2026). <i>The 2026 AI Index report: Technical performance</i>. https://hai.stanford.edu/ai-index/2026-ai-index-report/technical-performance</li>
+    <li>The New Stack. (2026, October). <i>Meta ships Muse Spark Open, its answer to China's best open-weight models</i>. https://thenewstack.io/meta-muse-spark-open/</li>
+    <li>DeepSeek-AI. (2024). <i>DeepSeek-V3 technical report</i>. arXiv:2412.19437.</li>
+    <li>DeepSeek-AI. (2025). <i>DeepSeek-R1: Incentivizing reasoning capability in LLMs via reinforcement learning</i>. arXiv:2501.12948.</li>
+    <li>Dettmers, T., Pagnoni, A., Holtzman, A., &amp; Zettlemoyer, L. (2023). <i>QLoRA: Efficient finetuning of quantized LLMs</i>. arXiv:2305.14314.</li>
+    <li>Epoch AI. (2024). <i>How far behind are open models?</i> https://epoch.ai</li>
+    <li>Jiang, A. Q., et al. (2023). <i>Mistral 7B</i>. arXiv:2310.06825.</li>
+    <li>Meta. (2024, July 23). <i>Open source AI is the path forward</i>. https://about.fb.com/news/2024/07/open-source-ai-is-the-path-forward/</li>
+    <li>National Telecommunications and Information Administration. (2024). <i>Dual-use foundation models with widely available model weights</i>. U.S. Department of Commerce.</li>
+    <li>Open Source Initiative. (2024). <i>The Open Source AI Definition 1.0</i>. https://opensource.org/ai/open-source-ai-definition</li>
+    <li>OpenAI. (2025, August 5). <i>Introducing gpt-oss</i>. https://openai.com/index/introducing-gpt-oss/</li>
+    <li>Taori, R., et al. (2023). <i>Alpaca: A strong, replicable instruction-following model</i>. Stanford CRFM.</li>
+    <li>Touvron, H., et al. (2023). <i>LLaMA: Open and efficient foundation language models</i>. arXiv:2302.13971.</li>
+    <li>The White House. (2025). <i>America's AI action plan</i>.</li>
+  </ul>
+</section>
+<footer>The Open-Weight Race &middot; Group project &middot; November 2022 to October 2026</footer>
+</main>
+
+<script>
+const CH=[
+ {id:'y22',big:'2022',name:'The starting gun',intro:'Open models existed before ChatGPT, but they were far behind. When ChatGPT launched, the best AI in the world was something you could only rent.'},
+ {id:'y23',big:'2023',name:'The leak and the flood',intro:'Meta shared its model with researchers, and within a week it was on the open internet. Thousands of hobbyists, students and startups started building on it, and a Paris startup showed a small team could keep up.'},
+ {id:'y24',big:'2024',name:'The frontier goes open',intro:'Google, Microsoft and xAI joined in. Meta released a model it said could compete with the best closed ones, and governments started arguing about whether that was safe.'},
+ {id:'y25',big:'2025',name:'The DeepSeek shock',intro:'A Chinese lab released a reasoning model as good as OpenAI\'s for free, and the stock market panicked. By August even OpenAI was giving away weights again.'},
+ {id:'y26',big:'2026',name:'Neck and neck',intro:'Chinese labs release trillion-parameter open models almost every month. Meta goes closed, then comes back. Depending on who is measuring, China trails the US by anywhere from 2.7% to eight months, and open trails closed by about four months.'}
+];
+// lic: open = permissive license, custom = restricted license, closed = closed model, event = policy or market event
+const E=[
+ {c:'y22',d:'Feb 14, 2019',t:'GPT-2: "too dangerous to release"',who:'OpenAI',r:'US',lic:['closed','Held back, then released'],tags:['us','policy'],
+  p:'OpenAI holds back the full GPT-2 model over misuse worries and releases it in stages, the full version in November 2019. It was OpenAI\'s last open-weight language model for six years.',
+  w:'This set up the argument the whole race is about: is it safer to keep weights locked up, or to let everyone study them?'},
+ {c:'y22',d:'Jul 12, 2022',t:'BLOOM, built by a thousand researchers',who:'BigScience, led by Hugging Face',r:'EU',lic:['custom','Responsible AI license'],tags:['eu','model'],
+  p:'More than 1,000 researchers from over 70 countries train a 176 billion parameter model in the open, on a French government supercomputer, and post the weights.',
+  w:'It proved a big model could be built in public. It was never close to the best closed models, though.'},
+ {c:'y22',d:'Aug 22, 2022',t:'Stable Diffusion goes public',who:'Stability AI',r:'EU',lic:['custom','Open RAIL license'],tags:['eu','model'],
+  p:'An image generator is released with its weights. Within weeks people run it on home gaming PCs and build thousands of tools around it.',
+  w:'A preview of what would happen to language models a few months later: once weights are out, a community builds faster than any one company.'},
+ {c:'y22',d:'Nov 30, 2022',t:'ChatGPT launches, closed',who:'OpenAI',r:'US',lic:['closed','Closed'],tags:['us','model'],
+  p:'ChatGPT reaches a million users in five days. Nobody outside OpenAI can see or download the model behind it.',
+  w:'The starting gun. Everyone wants a ChatGPT of their own, and the only way to get one without paying OpenAI is an open model.'},
+ {c:'y23',d:'Feb 24, 2023',t:'Meta releases LLaMA to researchers',who:'Meta AI',r:'US',lic:['custom','Research only'],tags:['us','model'],
+  p:'Meta shares models from 7 to 65 billion parameters with approved researchers. Its paper says the 13B version beat the much larger GPT-3 on most benchmarks.',
+  w:'Small, well-trained models could be strong. That made running a good model on ordinary hardware realistic.'},
+ {c:'y23',d:'Mar 3, 2023',t:'The weights leak',who:'An anonymous user on 4chan',r:'US',lic:['event','Leak'],tags:['us','policy'],
+  p:'About a week after release, a torrent link to the full LLaMA weights is posted online. Meta asks sites to take copies down, but they are everywhere.',
+  w:'The moment the race really started. A frontier-style model was now in the hands of anyone with a fast connection.'},
+ {c:'y23',d:'Mar 10, 2023',t:'llama.cpp runs it on a MacBook',who:'Georgi Gerganov',r:'EU',lic:['open','MIT'],tags:['eu','tool'],
+  p:'A developer in Bulgaria writes a plain C++ program that runs LLaMA on a laptop CPU by shrinking the weights to 4-bit numbers.',
+  w:'You no longer needed a data center. Tools like Ollama and LM Studio grew out of this, and so did on-device AI.'},
+ {c:'y23',d:'Mar 13, 2023',t:'Stanford Alpaca, for under $600',who:'Stanford CRFM',r:'US',lic:['custom','Research only'],tags:['us','model'],
+  p:'Stanford fine-tunes the 7B LLaMA on 52,000 example instructions and gets a chatbot that behaves a lot like OpenAI\'s, for less than $600.',
+  w:'It showed that copying ChatGPT-like behavior was cheap once you had good base weights. Vicuna and dozens of others followed within weeks.'},
+ {c:'y23',d:'Mar 14, 2023',t:'GPT-4 shares nothing',who:'OpenAI',r:'US',lic:['closed','Closed'],tags:['us','model'],
+  p:'GPT-4\'s technical report gives no details on the model\'s size, hardware, training compute or data, citing competition and safety.',
+  w:'The closed side was pulling further ahead and getting more secretive. GPT-4 became the target every open model chased for the next year.'},
+ {c:'y23',d:'May 4, 2023',t:'"We Have No Moat"',who:'A leaked internal Google memo',r:'US',lic:['event','Leak'],tags:['us','policy'],
+  p:'A Google researcher\'s memo, published by SemiAnalysis, argues that open-source developers are catching up so fast that neither Google nor OpenAI can stay ahead for long.',
+  w:'It put words to what the big labs were worried about, and it got passed around the whole industry.'},
+ {c:'y23',d:'May 23, 2023',t:'QLoRA: fine-tuning on one GPU',who:'Tim Dettmers and team, University of Washington',r:'US',lic:['open','MIT'],tags:['us','tool'],
+  p:'A new method lets people fine-tune a 65 billion parameter model on a single 48 GB graphics card instead of a cluster.',
+  w:'Customizing big models became something a student or small company could do.'},
+ {c:'y23',d:'May 31, 2023',t:'Falcon tops the leaderboard',who:'Technology Innovation Institute, Abu Dhabi',r:'ME',lic:['open','Apache 2.0'],tags:['me','model'],
+  p:'The UAE\'s Falcon 40B reaches first place on Hugging Face\'s open model leaderboard and is soon released royalty-free.',
+  w:'Countries outside the US and China saw open models as a way into the race.'},
+ {c:'y23',d:'Jul 18, 2023',t:'Llama 2, free for business',who:'Meta, with Microsoft',r:'US',lic:['custom','Llama 2 license'],tags:['us','model'],
+  p:'Meta releases Llama 2 for research and commercial use. The license excludes companies with more than 700 million monthly users without permission.',
+  w:'Now startups could legally build products on a strong model. Llama became the default base for open AI.'},
+ {c:'y23',d:'Aug 3, 2023',t:'Qwen arrives',who:'Alibaba Cloud',r:'CN',lic:['custom','Qwen license'],tags:['cn','model'],
+  p:'Alibaba open-sources Qwen-7B, the first of what becomes one of the largest open model families in the world.',
+  w:'China\'s biggest tech companies joined the open side early. That decision paid off in 2025.'},
+ {c:'y23',d:'Sep 27, 2023',t:'Mistral 7B drops by torrent',who:'Mistral AI, Paris',r:'EU',lic:['open','Apache 2.0'],tags:['eu','model'],
+  p:'A startup founded that spring by former DeepMind and Meta researchers posts a torrent link with no announcement. Its 7B model beats Llama 2 13B on every benchmark Mistral reported.',
+  w:'A truly permissive license and a small team. Europe now had a serious player.'},
+ {c:'y23',d:'Oct 30, 2023',t:'The White House asks about open weights',who:'US Executive Order 14110',r:'US',lic:['event','Policy'],tags:['us','policy'],
+  p:'President Biden\'s order on AI asks the Commerce Department to study the risks and benefits of models whose weights are widely available.',
+  w:'Open weights became a government policy question for the first time.'},
+ {c:'y23',d:'Nov 2 & Nov 29, 2023',t:'DeepSeek\'s first models',who:'DeepSeek, Hangzhou, backed by the hedge fund High-Flyer',r:'CN',lic:['custom','DeepSeek license'],tags:['cn','model'],
+  p:'A little-known lab run by Liang Wenfeng releases DeepSeek Coder and a 67 billion parameter chat model.',
+  w:'Few people outside China noticed. Fourteen months later this lab shook the world.'},
+ {c:'y23',d:'Dec 8, 2023',t:'Mixtral catches GPT-3.5',who:'Mistral AI',r:'EU',lic:['open','Apache 2.0'],tags:['eu','model'],
+  p:'Again released as a bare torrent link, Mixtral 8x7B uses a mixture of experts, so only part of the model works on each word. Mistral reported it matched or beat GPT-3.5 on most benchmarks.',
+  w:'About a year after ChatGPT, anyone could download a model as good as the one behind it.'},
+ {c:'y24',d:'Feb 21, 2024',t:'Google opens up with Gemma',who:'Google DeepMind',r:'US',lic:['custom','Gemma terms'],tags:['us','model'],
+  p:'Google releases small open models built from the same research as its closed Gemini models.',
+  w:'The company whose memo said "no moat" decided to play on both sides.'},
+ {c:'y24',d:'Mar 17, 2024',t:'xAI posts Grok-1',who:'xAI (Elon Musk)',r:'US',lic:['open','Apache 2.0'],tags:['us','model'],
+  p:'xAI releases the raw weights of its 314 billion parameter Grok-1 model.',
+  w:'Part competition, part a jab at OpenAI, which Musk was suing over its move away from openness.'},
+ {c:'y24',d:'Apr 18 & Apr 23, 2024',t:'Llama 3 and Phi-3',who:'Meta and Microsoft',r:'US',lic:['custom','Llama 3 / MIT'],tags:['us','model'],
+  p:'Meta\'s Llama 3 is trained on more than 15 trillion words and pieces of words. Days later Microsoft\'s Phi-3-mini, at 3.8 billion parameters, is small enough to run on a phone.',
+  w:'Open models were getting stronger at the top and small enough for pockets at the bottom.'},
+ {c:'y24',d:'May 7, 2024 (paper posted)',t:'DeepSeek-V2 starts a price war',who:'DeepSeek',r:'CN',lic:['custom','DeepSeek license'],tags:['cn','model','market'],
+  p:'DeepSeek prices its new model so low that ByteDance, Alibaba and Baidu cut their prices in response.',
+  w:'Open, efficient models were pushing the cost of AI toward zero.'},
+ {c:'y24',d:'Jul 23, 2024',t:'Llama 3.1 405B reaches the frontier',who:'Meta, Mark Zuckerberg',r:'US',lic:['custom','Llama 3.1 license'],tags:['us','model'],
+  p:'Meta releases a 405 billion parameter model it says competes with GPT-4o and Claude 3.5 Sonnet. Zuckerberg publishes a letter titled "Open Source AI Is the Path Forward."',
+  w:'The first open model in the same league as the best closed ones, about 16 months after GPT-4.'},
+ {c:'y24',d:'Jul 30, 2024',t:'The US decides not to restrict',who:'NTIA, US Department of Commerce',r:'US',lic:['event','Policy'],tags:['us','policy'],
+  p:'The report the White House asked for recommends against limiting open weights for now, while the government watches for new risks.',
+  w:'The open side kept its legal room to grow in the US.'},
+ {c:'y24',d:'Sep 19 & Sep 25, 2024',t:'Qwen2.5 and Llama 3.2',who:'Alibaba Cloud and Meta',r:'CN',lic:['open','Mostly Apache 2.0'],tags:['cn','us','model'],
+  p:'Alibaba releases over 100 Qwen2.5 models, including coding and math versions. A week later Meta releases Llama 3.2 with 1B and 3B models for phones and its first vision models.',
+  w:'Qwen started becoming the base model developers picked for fine-tuning.'},
+ {c:'y24',d:'Oct 28, 2024',t:'What "open source AI" means',who:'Open Source Initiative',r:'US',lic:['event','Standard'],tags:['us','policy'],
+  p:'The OSI publishes its Open Source AI Definition 1.0, which requires details about training data and code, not just weights. Llama\'s license does not qualify.',
+  w:'It drew the line between open weights and open source that the explainer at the top of this page uses.'},
+ {c:'y24',d:'Dec 26, 2024',t:'DeepSeek-V3 and the $5.6 million number',who:'DeepSeek',r:'CN',lic:['custom','DeepSeek license'],tags:['cn','model'],
+  p:'A 671 billion parameter mixture of experts model. The paper says its final training run took 2.788 million H800 GPU hours, about $5.6 million, not counting earlier research and experiments.',
+  w:'Closed labs were spending far more. People started asking whether all that spending was needed.'},
+ {c:'y25',d:'Jan 20, 2025',t:'DeepSeek-R1 matches o1',who:'DeepSeek',r:'CN',lic:['open','MIT'],tags:['cn','model'],
+  p:'A reasoning model that DeepSeek reports is comparable to OpenAI\'s o1 on math and coding, under a fully permissive license. The paper explains how it learned to reason through reinforcement learning.',
+  w:'Only about four months behind OpenAI, and the recipe was public. The gap had nearly closed.'},
+ {c:'y25',d:'Jan 27, 2025',t:'Nvidia loses $589 billion in a day',who:'US stock market',r:'CN',lic:['event','Market'],tags:['cn','market'],
+  p:'DeepSeek\'s app hits number one on the US App Store. Investors fear AI will need far fewer chips, and Nvidia falls about 17%.',
+  w:'The biggest one-day loss of market value for any company in US history. Investor Marc Andreessen called DeepSeek AI\'s "Sputnik moment."'},
+ {c:'y25',d:'Jan 31, 2025',t:'"The wrong side of history"',who:'Sam Altman, OpenAI',r:'US',lic:['event','Statement'],tags:['us','policy'],
+  p:'In a Reddit Q&A, Altman says he personally thinks OpenAI has been on the wrong side of history on open source and needs a different strategy.',
+  w:'The company that started the closed era said out loud that it might have been wrong.'},
+ {c:'y25',d:'Apr 5 & Apr 28, 2025',t:'Llama 4 stumbles, Qwen3 surges',who:'Meta and Alibaba',r:'CN',lic:['open','Apache 2.0 (Qwen3)'],tags:['cn','us','model'],
+  p:'Meta\'s Llama 4 gets a mixed reception and criticism for showing a specially tuned version on a public leaderboard. Weeks later Alibaba\'s Qwen3, from 0.6B to 235B, can switch between quick answers and step-by-step thinking.',
+  w:'Leadership of the open side shifted from Meta toward Chinese labs.'},
+ {c:'y25',d:'Jul 11 - 30, 2025',t:'Meta rethinks, China keeps shipping',who:'Meta; Moonshot AI; Zhipu (Z.ai)',r:'CN',lic:['custom','Modified MIT / MIT'],tags:['cn','us','model'],
+  p:'Zuckerberg writes that Meta will need to be careful about what it open-sources at the frontier. The same month, Moonshot releases Kimi K2, a one trillion parameter open model, and Zhipu releases GLM-4.5.',
+  w:'The first big US open lab stepped back just as Chinese labs stepped forward.'},
+ {c:'y25',d:'Jul 23, 2025',t:'America\'s AI Action Plan backs open models',who:'The White House',r:'US',lic:['event','Policy'],tags:['us','policy'],
+  p:'The plan has a section called "Encourage Open-Source and Open-Weight AI," arguing that American open models should be the ones the world builds on.',
+  w:'Open weights went from a safety worry in 2023 to a national strategy in 2025.'},
+ {c:'y25',d:'Aug 4, 2025',t:'The ATOM Project',who:'Nathan Lambert and US researchers',r:'US',lic:['event','Campaign'],tags:['us','policy'],
+  p:'A campaign for American Truly Open Models warns that the US is falling behind China in open models and calls for funding fully open ones.',
+  w:'The worry had flipped. Americans were now arguing they had too few open models, not too many.'},
+ {c:'y25',d:'Aug 5, 2025',t:'OpenAI releases gpt-oss',who:'OpenAI',r:'US',lic:['open','Apache 2.0'],tags:['us','model'],
+  p:'gpt-oss-120b and gpt-oss-20b, OpenAI\'s first open-weight language models since GPT-2. The smaller one runs on a machine with 16 GB of memory.',
+  w:'Six years after "too dangerous to release," OpenAI was posting weights again. The race had pulled in everyone.'},
+ {c:'y25',d:'Nov 6, 2025',t:'Kimi K2 Thinking',who:'Moonshot AI, Beijing',r:'CN',lic:['custom','Modified MIT'],tags:['cn','model'],
+  p:'Moonshot releases an open reasoning model and reports scores higher than GPT-5 on some agent and research benchmarks.',
+  w:'An open model claiming wins over the newest closed flagship within months of its release.'},
+ {c:'y25',d:'Dec 1-2, 2025',t:'DeepSeek-V3.2 and Mistral Large 3',who:'DeepSeek; Mistral AI',r:'EU',lic:['open','MIT / Apache 2.0'],tags:['cn','eu','model'],
+  p:'DeepSeek posts V3.2 under MIT. A day later Mistral releases Mistral Large 3, a 675 billion parameter mixture of experts model, along with small Ministral 3 models, all under Apache 2.0.',
+  w:'Europe\'s best open lab answered China at the top end, with one of the most permissive licenses there is.'},
+ {c:'y25',d:'Dec 15, 2025',t:'Nvidia starts Nemotron 3',who:'Nvidia',r:'US',lic:['custom','Nvidia open model license'],tags:['us','model'],
+  p:'Nvidia announces an open model family in three sizes, Nano, Super and Ultra, and releases about three trillion tokens of the data used to train them.',
+  w:'With Meta quiet, the company that sells the chips became one of the biggest American names on the open side.'},
+ // 2026
+ {c:'y26',d:'Jan 2, 2026',t:'China trails by seven months',who:'Epoch AI',r:'US',lic:['event','Research'],tags:['us','cn','research'],
+  p:'Epoch AI\'s capabilities index finds that every model at the frontier since 2023 came from the US, and that Chinese models trailed by seven months on average. The gap ranged from 4 to 14 months.',
+  w:'A baseline for 2026. Most of China\'s best models are open weights, so Epoch noted this is close to the open vs. closed gap too.'},
+ {c:'y26',d:'Jan 27, 2026',t:'Kimi K2.5, and a US startup answers',who:'Moonshot AI; Arcee AI',r:'CN',lic:['custom','Open weights'],tags:['cn','us','model'],
+  p:'Moonshot releases Kimi K2.5, a one trillion parameter model. The same day, the small US startup Arcee AI releases Trinity Large at 400 billion parameters.',
+  w:'China\'s labs were shipping trillion-parameter open models. The newest big American entry came from a startup, not Meta.'},
+ {c:'y26',d:'Feb 12-16, 2026',t:'The February wave',who:'Z.ai, MiniMax, Alibaba',r:'CN',lic:['open','Qwen3.5: Apache 2.0'],tags:['cn','model'],
+  p:'In five days Z.ai releases GLM-5 (744 billion parameters), MiniMax releases M2.5, and Alibaba releases Qwen3.5 (397 billion) under Apache 2.0. Researcher Sebastian Raschka counted ten new open model designs in January and February alone.',
+  w:'Chinese labs were now releasing on a pace the US side couldn\'t match.'},
+ {c:'y26',d:'Apr 2, 2026',t:'Gemma 4 switches to Apache 2.0',who:'Google DeepMind',r:'US',lic:['open','Apache 2.0'],tags:['us','model'],
+  p:'Google releases Gemma 4, from small edge models up to larger dense and mixture of experts versions, and drops its own Gemma terms for the standard Apache 2.0 license.',
+  w:'The strongest American open models in early 2026 were the small ones you can run on one GPU or a phone.'},
+ {c:'y26',d:'Apr 8, 2026',t:'Meta goes closed',who:'Meta Superintelligence Labs',r:'US',lic:['closed','Closed'],tags:['us','model'],
+  p:'Muse Spark, Meta\'s first new model in about a year, is available only through Meta\'s app and an API preview. No weights.',
+  w:'The company that started the open race in 2023 stepped off the open lane, at least for its flagship.'},
+ {c:'y26',d:'Apr 13, 2026',t:'Stanford: the US-China gap has "effectively closed"',who:'Stanford HAI, AI Index 2026',r:'US',lic:['event','Research'],tags:['us','cn','research'],
+  p:'As of March 2026, the top US model led the top Chinese model by only 2.7% on the Arena leaderboard, 1,503 to 1,464. The two countries had swapped the top spot several times since early 2025.',
+  w:'The same report found the closed vs. open gap had reopened, from 0.5% in August 2024 to 3.3%. China caught the US faster than open caught closed.'},
+ {c:'y26',d:'Apr 20-24, 2026',t:'Kimi K2.6 and DeepSeek V4',who:'Moonshot AI; DeepSeek',r:'CN',lic:['open','MIT (DeepSeek V4)'],tags:['cn','model'],
+  p:'Moonshot ships Kimi K2.6. Four days later DeepSeek previews V4 in two sizes: Pro, with 1.6 trillion parameters, and Flash, with 284 billion. DeepSeek reported results roughly on par with Claude Opus 4.6 and GPT-5.4.',
+  w:'The long-awaited follow-up to R1. It didn\'t crash the market this time. The fight was over how good it really was.'},
+ {c:'y26',d:'May 1, 2026',t:'The US government says eight months',who:'CAISI, National Institute of Standards and Technology',r:'US',lic:['event','Research'],tags:['us','cn','research','policy'],
+  p:'The Center for AI Standards and Innovation tests DeepSeek V4 Pro on its own benchmarks, some of them private, and finds it performs about like GPT-5, roughly 8 months behind the US frontier. It still calls V4 the most capable Chinese model it has evaluated.',
+  w:'Who measures matters. A public leaderboard said 2.7%, the US government said 8 months, and critics questioned the private tests.'},
+ {c:'y26',d:'May 29, 2026',t:'Open models: four months behind',who:'Epoch AI',r:'US',lic:['event','Research'],tags:['research'],
+  p:'Epoch finds that since January 2026 the best open-weight models have trailed the best closed ones by about four months on average, about the distance between GPT-5 and GPT-5.5. Chinese labs make up most of the open side.',
+  w:'In 2023 open models were more than a year behind. Now a new closed model\'s lead lasted about one season.'},
+ {c:'y26',d:'Jul 16, 2026',t:'Kimi K3: 2.8 trillion parameters',who:'Moonshot AI',r:'CN',lic:['custom','Custom, revenue limits'],tags:['cn','model'],
+  p:'Kimi K3 debuts at number 3 on the Artificial Analysis Intelligence Index, level with Claude Opus 4.8 and GPT-5.5 and behind only Claude Fable 5 and GPT-5.6 Sol. Its weights are posted on July 27.',
+  w:'An open model sitting right behind the two newest US flagships. The catch was the license: companies with over $20 million in yearly revenue must negotiate before selling it as a service.'},
+ {c:'y26',d:'Aug 10, 2026',t:'Muse Glimmer: Meta comes back small',who:'Meta Superintelligence Labs',r:'US',lic:['open','Apache 2.0'],tags:['us','model'],
+  p:'Meta releases Muse Glimmer, a 30 billion parameter model under Apache 2.0 that runs on a laptop with 32 GB of memory. It was distilled from Meta\'s closed Muse Spark models.',
+  w:'Meta\'s new approach: keep the frontier closed and open up the smaller tiers.'},
+ {c:'y26',d:'Aug 12 - 28, 2026',t:'Open, with strings attached',who:'Alibaba; Z.ai',r:'CN',lic:['custom','Revenue thresholds'],tags:['cn','model'],
+  p:'Alibaba releases a 2.4 trillion parameter Qwen3.8 whose license requires a commercial deal from providers earning over $50 million a year, while its 27B version stays Apache 2.0. Z.ai launches GLM-5.3 by API on August 14 and holds the weights for two weeks for a safety review tied to its cybersecurity skills.',
+  w:'As open models got close to the frontier, labs started adding conditions: revenue limits, attribution rules and safety delays.'},
+ {c:'y26',d:'Sep 10, 2026',t:'DeepSeek V4.1-Flash',who:'DeepSeek',r:'CN',lic:['open','MIT'],tags:['cn','model'],
+  p:'DeepSeek releases V4.1-Flash under MIT, with a one million token context window and built-in image understanding, priced below its own flagship.',
+  w:'Smaller, cheaper and close to as good. Prices on the open side kept falling.'},
+ {c:'y26',d:'Sep 21-22, 2026',t:'A phone maker takes the open crown',who:'Xiaomi',r:'CN',lic:['open','MIT'],tags:['cn','model'],
+  p:'Xiaomi\'s MiMo-V2.6-Pro, a 1.02 trillion parameter model under MIT, scores 46 on the Artificial Analysis Intelligence Index. That is the top open-weights score, tied with xAI\'s closed Grok 4.7, and a few points behind the best closed models. Its reported training cost was $2.6 million.',
+  w:'It also started a new fight. Anthropic alleged that Xiaomi collected over 400,000 conversations with Claude to train on, a practice called distillation. Xiaomi had not responded publicly.'},
+ {c:'y26',d:'Oct 15, 2026',t:'Muse Spark Open',who:'Meta Superintelligence Labs',r:'US',lic:['custom','Muse license, commercial limits'],tags:['us','model'],
+  p:'Meta posts the weights of a version of its flagship: 816 billion parameters with 42 billion active, a one million token context, and text, image, audio and video input. Meta calls it the most capable US open-weight model to date.',
+  w:'Six months after going closed, Meta is back in the race against Kimi, Qwen and GLM. Early independent tests rank it lower than Meta\'s own claims.'}
+];
+const TEAMS=[
+ ['United States','US',[['Meta','Llama, Muse'],['Google','Gemma'],['OpenAI','gpt-oss'],['Nvidia','Nemotron'],['Microsoft','Phi'],['Arcee AI','Trinity'],['xAI','Grok-1'],['AI2','OLMo']]],
+ ['China','CN',[['Alibaba','Qwen'],['DeepSeek','R1, V4'],['Moonshot AI','Kimi'],['Zhipu (Z.ai)','GLM'],['Xiaomi','MiMo'],['MiniMax','M2.5'],['01.AI','Yi']]],
+ ['Europe','EU',[['Mistral AI','Mixtral, Large 3'],['Hugging Face','BLOOM'],['Stability AI','Stable Diffusion'],['llama.cpp','the tool everyone runs']]],
+ ['Middle East','ME',[['TII (UAE)','Falcon']]]
+];
+const RN={US:'United States',CN:'China',EU:'Europe',ME:'Middle East'};
+
+// download bar in hero
+(function(){let p=0;const b=document.getElementById('dlbar'),pc=document.getElementById('dlpct'),nt=document.getElementById('dlnote');
+ const notes=['connecting to peers...','412 peers','1,904 peers','the whole internet has a copy'];
+ const iv=setInterval(()=>{p=Math.min(100,p+Math.random()*3.2);b.style.width=p+'%';pc.textContent=Math.floor(p)+'%';nt.textContent=notes[Math.min(3,Math.floor(p/34))];if(p>=100){clearInterval(iv);pc.textContent='100%'}},120)})();
+
+// weight rain
+const rc=document.getElementById('rain'),r=rc.getContext('2d');let RW,RH,cols=[];
+function rrs(){RW=rc.width=rc.offsetWidth*devicePixelRatio;RH=rc.height=rc.offsetHeight*devicePixelRatio;const n=Math.floor(RW/(70*devicePixelRatio));cols=Array.from({length:n},()=>({y:Math.random()*RH,s:.6+Math.random()*1.8}))}rrs();addEventListener('resize',rrs);
+function w(){return (Math.random()<.5?'-':' ')+(Math.random()*2).toFixed(4)}
+(function rl(){r.fillStyle='rgba(5,9,10,.18)';r.fillRect(0,0,RW,RH);const fs=12*devicePixelRatio;r.font=fs+'px JetBrains Mono, monospace';
+ cols.forEach((c,i)=>{r.fillStyle=i%7===0?'rgba(185,166,255,.75)':'rgba(78,240,160,.7)';r.fillText(w(),i*70*devicePixelRatio,c.y);c.y+=fs*c.s*.5;if(c.y>RH)c.y=-20});
+ requestAnimationFrame(rl)})();
+
+// race track chart
+(function(){const svg=document.getElementById('tracksvg');const t0=2022.75,t1=2026.95;const X=t=>60+(t-t0)/(t1-t0)*900;
+ const C=[[2022.92,'ChatGPT'],[2023.2,'GPT-4'],[2024.7,'o1-preview']];
+ const O=[[2023.94,'Mixtral 8x7B'],[2024.56,'Llama 3.1 405B'],[2025.05,'DeepSeek-R1']];
+ const gaps=['12 mo','16 mo','4 mo'];const yc=80,yo=250;let h='';
+ h+=`<rect x="40" y="${yc-34}" width="940" height="68" rx="34" fill="#b9a6ff12" stroke="#b9a6ff40"/><rect x="40" y="${yo-34}" width="940" height="68" rx="34" fill="#4ef0a012" stroke="#4ef0a040"/>`;
+ h+=`<text x="${X(2025.2)}" y="${yc+5}" font-size="12" fill="#b9a6ff" letter-spacing="3">CLOSED LANE</text><text x="58" y="${yo+52}" font-size="12" fill="#4ef0a0" letter-spacing="3">OPEN LANE</text>`;
+ [2023,2024,2025,2026].forEach(y=>{h+=`<line x1="${X(y)}" x2="${X(y)}" y1="30" y2="300" stroke="#ffffff14"/><text x="${X(y)}" y="${y===2026?165:165}" font-size="13" text-anchor="middle" fill="#9aa7a0">${y}</text>`.replace('y="165"','y="20"')});
+ C.forEach(([t,l],i)=>{const [to,lo]=O[i];const x1=X(t),x2=X(to);const mid=(x1+x2)/2;
+  h+=`<path class="draw" d="M${x1},${yc+14} C${x1},${yc+90} ${x2},${yo-90} ${x2},${yo-14}" stroke="#ffffff" stroke-width="2" fill="none" opacity=".75" style="transition-delay:${i*.5}s"/>`;
+  h+=`<g class="pop" style="transition-delay:${1+i*.5}s"><rect x="${mid-34}" y="${(yc+yo)/2-30}" width="68" height="26" rx="13" fill="#000" stroke="#ffffff55"/><text x="${mid}" y="${(yc+yo)/2-12}" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">${gaps[i]}</text></g>`;
+  h+=`<circle cx="${x1}" cy="${yc}" r="9" fill="#b9a6ff"/><text x="${x1+(i===0?-6:i===1?6:0)}" y="${yc-16}" text-anchor="${i===0?'end':i===1?'start':'middle'}" font-size="12" fill="#e5ddff">${l}</text>`;
+  h+=`<circle cx="${x2}" cy="${yo}" r="9" fill="#4ef0a0"/><text x="${x2}" y="${yo+26}" text-anchor="middle" font-size="12" fill="#d8ffe9">${lo}</text>`});
+ h+=`<g class="pop" style="transition-delay:2.6s">`+[[2025.6,'gpt-oss',1],[2025.85,'Kimi K2 Thinking',0],[2026.31,'DeepSeek V4',1],[2026.54,'Kimi K3',0],[2026.73,'MiMo-V2.6',1]].map(([t,l,below])=>`<circle cx="${X(t)}" cy="${yo}" r="7" fill="#4ef0a0"/><text x="${X(t)}" y="${below?yo+26:yo-16}" text-anchor="middle" font-size="12" fill="#d8ffe9">${l}</text>`).join('')+`</g>`;
+ h+=`<g class="pop" style="transition-delay:2.6s"><circle cx="${X(2026.54)}" cy="${yc}" r="7" fill="#b9a6ff"/><text x="${X(2026.54)}" y="${yc-16}" text-anchor="middle" font-size="12" fill="#e5ddff">Fable 5, GPT-5.6 Sol</text><line x1="${X(2026.54)}" x2="${X(2026.54)}" y1="${yc+10}" y2="${yo-10}" stroke="#ffc94d" stroke-dasharray="3 5"/><rect x="${X(2026.54)-66}" y="${(yc+yo)/2-30}" width="132" height="26" rx="13" fill="#000" stroke="#ffc94d88"/><text x="${X(2026.54)}" y="${(yc+yo)/2-12}" text-anchor="middle" font-size="12" font-weight="700" fill="#ffc94d">K3 is #3 overall</text></g>`;
+ svg.innerHTML=h;
+ new IntersectionObserver(es=>{if(es[0].isIntersecting)document.getElementById('track').classList.add('go')},{threshold:.35}).observe(document.getElementById('track'))})();
+
+// filters
+const F=[['all','Everything'],['us','United States'],['cn','China'],['eu','Europe'],['me','Middle East'],['model','Model releases'],['policy','Policy & leaks'],['market','Markets'],['research','Research & rankings'],['tool','Tools']];
+const fb=document.getElementById('filters');
+F.forEach(([k,l],i)=>{const b=document.createElement('button');b.className='chip'+(i?'':' on');b.textContent=l;b.onclick=()=>{fb.querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));b.classList.add('on');document.querySelectorAll('.card').forEach(c=>c.classList.toggle('hide',k!=='all'&&!c.dataset.tags.split(' ').includes(k)))};fb.appendChild(b)});
+const cb=document.createElement('button');cb.className='chip ctxbtn';cb.textContent='Hide "why it mattered"';cb.onclick=()=>{const on=document.body.classList.toggle('ctx');cb.textContent=on?'Hide "why it mattered"':'Show "why it mattered" on every card'};
+fb.appendChild(cb);
+
+// chapters
+const wrap=document.getElementById('chapters');
+CH.forEach(ch=>{
+ const s=document.createElement('section');s.className='chapter';s.id=ch.id;s.dataset.era=ch.id;
+ s.innerHTML=`<div class="ch-head"><div class="big">${ch.big}</div><h2>${ch.name}</h2><p>${ch.intro}</p></div>`;
+ if(ch.id==='y25')s.innerHTML+=`<div class="shock" id="shock"><div><div class="kicker">Spotlight &middot; January 27, 2025</div><h3>The day an open model moved the market</h3><p>DeepSeek said its V3 model's final training run cost about $5.6 million, and its R1 reasoning model was free to download. If good AI could be built that cheaply, maybe the world needed fewer expensive Nvidia chips. Investors sold.</p><div class="drop">-17%</div><p style="margin-top:6px">Nvidia's drop that day, about $589 billion in market value.</p></div><div><div class="bars"><div class="a" data-h="100"><span>~$3.5T</span></div><div class="b" data-h="83"><span>~$2.9T</span></div></div><div class="barlbl"><span>Nvidia, Jan 24</span><span>Nvidia, Jan 27</span></div></div></div>`;
+ if(ch.id==='y26')s.innerHTML+=`<div class="measure"><div class="kicker">The gap in 2026, measured five ways</div><div class="mgrid">${[
+   ['2.7%','US lead over China on the Arena leaderboard, March 2026','Stanford AI Index'],
+   ['3.3%','closed lead over open on the same leaderboard','Stanford AI Index'],
+   ['~4 mo','open models behind closed, average since January 2026','Epoch AI, May 2026'],
+   ['~7 mo','China behind the US, average since 2023','Epoch AI, January 2026'],
+   ['~8 mo','DeepSeek V4 Pro behind the US frontier','CAISI (NIST), May 2026']
+  ].map(([n,t,s])=>`<div><b>${n}</b><span>${t}</span><i>${s}</i></div>`).join('')}</div><p>Different tests give different answers. Every one of them is under a year. In 2023, open models were more than a year behind.</p></div>`;
+ const sp=document.createElement('div');sp.className='spine';
+ E.filter(e=>e.c===ch.id).forEach(e=>{const c=document.createElement('article');c.className='card'+(e.lic[0]==='closed'?' closedcard':'');c.dataset.tags=e.tags.join(' ');
+  c.innerHTML=`<div class="top"><span class="date">${e.d}</span><span class="flag">${RN[e.r]}</span></div><h3>${e.t}</h3><div class="who">${e.who}</div><p>${e.p}</p><div class="why"><b>Why it mattered:</b> ${e.w}</div><div class="more"><span class="pill lic-${e.lic[0]}">${e.lic[1]}</span><span class="tg">tap for why it mattered +</span></div>`;
+  c.onclick=()=>{c.classList.toggle('open');c.querySelector('.tg').textContent=c.classList.contains('open')?'close -':'tap for why it mattered +'};sp.appendChild(c)});
+ s.appendChild(sp);wrap.appendChild(s)});
+
+// reveal + era colors
+const io=new IntersectionObserver(es=>es.forEach(x=>{if(x.isIntersecting)x.target.classList.add('in')}),{rootMargin:'0px 0px -30% 0px'});
+document.querySelectorAll('.card').forEach(c=>io.observe(c));
+const eo=new IntersectionObserver(es=>es.forEach(x=>{if(x.isIntersecting)document.body.dataset.era=x.target.dataset.era}),{rootMargin:'-45% 0px -45% 0px'});
+document.querySelectorAll('.chapter,#whyit').forEach(s=>eo.observe(s));
+const sh=document.getElementById('shock');
+new IntersectionObserver(es=>{if(es[0].isIntersecting)sh.querySelectorAll('.bars div').forEach((d,i)=>setTimeout(()=>d.style.height=d.dataset.h+'%',i*900))},{threshold:.4}).observe(sh);
+addEventListener('scroll',()=>{const h=document.documentElement;document.getElementById('progress').style.width=(h.scrollTop/(h.scrollHeight-innerHeight)*100)+'%';if(h.scrollTop<innerHeight*1.5)document.body.dataset.era='y22'},{passive:true});
+
+// scoreboard
+const bd=document.getElementById('board');
+TEAMS.forEach(([n,code,list])=>{const d=document.createElement('div');d.className='team';d.innerHTML=`<h4>${n}</h4><div class="ct">${list.length} open player${list.length>1?'s':''}</div><ul>${list.map(([a,b])=>`<li>${a}<i>${b}</i></li>`).join('')}</ul>`;bd.appendChild(d)});
+</script>
+
+<style>
+/* 3D + micro-interactions */
+#orb{position:absolute;left:50%;top:50%;width:min(92vmin,760px);height:min(92vmin,760px);transform:translate(-50%,-50%);z-index:1;opacity:.75;pointer-events:none}
+#glow{position:fixed;left:0;top:0;width:520px;height:520px;margin:-260px 0 0 -260px;border-radius:50%;pointer-events:none;z-index:3;background:radial-gradient(circle,rgba(78,240,160,.10),transparent 60%);mix-blend-mode:screen;transition:opacity .4s;opacity:0}
+body.moving #glow{opacity:1}
+.tilt{position:relative;transform-style:preserve-3d;will-change:transform}
+.tilt::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .3s;background:radial-gradient(420px circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.13),transparent 42%)}
+.tilt:hover::before{opacity:1}
+.tilt.tilting{transition:transform .08s linear,opacity .7s,border-color .3s,box-shadow .3s!important}
+.card .date,.card h3{transform:translateZ(26px)}
+.card .who,.card .pill{transform:translateZ(14px)}
+.ch-head .big{display:inline-block;transform-origin:50% 60%;will-change:transform}
+.chip{position:relative;overflow:hidden}
+.chip .rip{position:absolute;border-radius:50%;background:rgba(255,255,255,.45);transform:scale(0);animation:rip .6s ease-out forwards;pointer-events:none}
+@keyframes rip{to{transform:scale(4);opacity:0}}
+.shock.hit{animation:quake .55s cubic-bezier(.36,.07,.19,.97) both}
+@keyframes quake{10%,90%{transform:translate3d(-2px,0,0)}20%,80%{transform:translate3d(4px,0,0)}30%,50%,70%{transform:translate3d(-7px,0,0)}40%,60%{transform:translate3d(7px,0,0)}}
+.card .date{background:linear-gradient(90deg,var(--accent),#fff,var(--accent));background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:sheen 6s linear infinite}
+@keyframes sheen{to{background-position:-200% 0}}
+@media (hover:none),(prefers-reduced-motion:reduce){#orb{opacity:.45}#glow{display:none}}
+@media print{#orb,#glow{display:none!important}.card .date{color:#000;background:none}}
+</style>
+<script>
+(function(){
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches, HOVER=matchMedia('(hover: hover)').matches;
+// 3D rotating sphere of "weights" in the hero, follows the mouse
+const oc=document.getElementById('orb'),o=oc.getContext('2d');let OW,OH;
+function ors(){OW=oc.width=oc.offsetWidth*devicePixelRatio;OH=oc.height=oc.offsetHeight*devicePixelRatio}ors();addEventListener('resize',ors);
+const N=900,P=[];const ga=Math.PI*(3-Math.sqrt(5));
+for(let i=0;i<N;i++){const y=1-(i/(N-1))*2,r=Math.sqrt(1-y*y),t=ga*i;P.push([Math.cos(t)*r,y,Math.sin(t)*r,Math.random()<.22])}
+let ry=0,rx=-.35,tx=-.35,ty=0,spd=.0026;const hero=document.querySelector('.hero');
+hero.addEventListener('mousemove',e=>{const r=hero.getBoundingClientRect();ty=((e.clientX-r.left)/r.width-.5)*1.4;tx=-.35+((e.clientY-r.top)/r.height-.5)*.9});
+hero.addEventListener('mouseleave',()=>{ty=0;tx=-.35});
+let heroVis=true;new IntersectionObserver(es=>heroVis=es[0].isIntersecting).observe(hero);
+(function draw(t){requestAnimationFrame(draw);if(!heroVis)return;o.clearRect(0,0,OW,OH);
+ ry+=RM?0:spd;rx+=(tx-rx)*.04;const yaw=ry+ty;const cy=Math.cos(yaw),sy=Math.sin(yaw),cx=Math.cos(rx),sx=Math.sin(rx);
+ const R=Math.min(OW,OH)*.36,X0=OW/2,Y0=OH/2,pulse=1+Math.sin(t/900)*.015;
+ for(const [x,y,z,closed] of P){let x1=x*cy-z*sy,z1=x*sy+z*cy;let y1=y*cx-z1*sx,z2=y*sx+z1*cx;
+  const k=2.6/(2.6+z2),px=X0+x1*R*k*pulse,py=Y0+y1*R*k*pulse,d=(1-z2)/2;
+  o.globalAlpha=.12+.88*d*d;o.fillStyle=closed?'#b9a6ff':'#4ef0a0';o.beginPath();o.arc(px,py,(0.6+1.9*d)*devicePixelRatio,0,6.283);o.fill()}
+ o.globalAlpha=1})(0);
+
+// cursor glow
+if(HOVER&&!RM){const g=document.getElementById('glow');let gx=0,gy=0,mx=0,my=0,tm;
+ addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;document.body.classList.add('moving');clearTimeout(tm);tm=setTimeout(()=>document.body.classList.remove('moving'),1800)},{passive:true});
+ (function gl(){gx+=(mx-gx)*.14;gy+=(my-gy)*.14;g.style.transform=`translate(${gx}px,${gy}px)`;requestAnimationFrame(gl)})();}
+
+// 3D tilt + glare on cards and panels
+if(HOVER&&!RM)document.querySelectorAll('.card,.box,.team,.w,.mgrid>div,.gapnums>div,.shock,.track').forEach(el=>{
+ el.classList.add('tilt');const max=el.classList.contains('track')||el.classList.contains('shock')?4:9;
+ el.addEventListener('mousemove',e=>{const r=el.getBoundingClientRect(),px=(e.clientX-r.left)/r.width,py=(e.clientY-r.top)/r.height;
+  el.style.setProperty('--mx',px*100+'%');el.style.setProperty('--my',py*100+'%');el.classList.add('tilting');
+  el.style.transform=`perspective(900px) rotateX(${(.5-py)*max}deg) rotateY(${(px-.5)*max}deg) translateZ(0)`});
+ el.addEventListener('mouseleave',()=>{el.classList.remove('tilting');el.style.transform=''})});
+
+// ripple on chips
+document.addEventListener('click',e=>{const c=e.target.closest('.chip');if(!c)return;const r=c.getBoundingClientRect(),s=Math.max(r.width,r.height),sp=document.createElement('span');
+ sp.className='rip';sp.style.cssText=`width:${s}px;height:${s}px;left:${e.clientX-r.left-s/2}px;top:${e.clientY-r.top-s/2}px`;c.appendChild(sp);setTimeout(()=>sp.remove(),650)});
+
+// count-up numbers when they scroll into view
+const cu=new IntersectionObserver(es=>es.forEach(x=>{if(!x.isIntersecting)return;cu.unobserve(x.target);const el=x.target,txt=el.textContent,m=txt.match(/-?\d+(\.\d+)?/);if(!m||RM)return;
+ const end=parseFloat(m[0]),dec=(m[1]||'').length-1>0?(m[1].length-1):0,t0=performance.now();
+ (function step(t){const k=Math.min(1,(t-t0)/1300),v=end*(1-Math.pow(1-k,3));el.textContent=txt.replace(m[0],v.toFixed(dec));if(k<1)requestAnimationFrame(step)})(t0)}),{threshold:.6});
+document.querySelectorAll('.gapnums b,.mgrid b,.drop').forEach(b=>cu.observe(b));
+
+// earthquake when the DeepSeek spotlight arrives
+const sh=document.getElementById('shock');new IntersectionObserver(es=>{if(es[0].isIntersecting){sh.classList.add('hit');setTimeout(()=>sh.classList.remove('hit'),700)}},{threshold:.5}).observe(sh);
+
+// big chapter years swing in 3D as they pass through the screen
+const bigs=[...document.querySelectorAll('.ch-head .big')];
+if(!RM)(function sw(){requestAnimationFrame(sw);const h=innerHeight;for(const b of bigs){const r=b.getBoundingClientRect();if(r.bottom<-50||r.top>h+50)continue;
+ const p=((r.top+r.height/2)/h-.5);b.style.transform=`perspective(700px) rotateX(${p*-50}deg) rotateY(${p*18}deg) scale(${1-Math.abs(p)*.15})`}})();
+})();
+</script>
+</body>
+</html>

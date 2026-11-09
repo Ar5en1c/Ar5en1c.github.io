@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Open-Weight Race · Kuldeep Singh</title>
+<meta name="description" content="Case study: an interactive timeline of the race to release AI models for anyone to download, November 2022 to October 2026.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<style>
+.frame{border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow);background:#050a09;margin:24px 0 10px}
+.frame iframe{display:block;width:100%;height:560px;border:0}
+@media (max-width:640px){.frame iframe{height:460px}}
+.framenote{font-size:14px;color:var(--muted);margin:0 0 8px}
+.feat{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:24px 0 8px}
+@media (max-width:760px){.feat{grid-template-columns:minmax(0,1fr)}}
+.feat div{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 20px;font-size:15px}
+.feat b{display:block;font-size:16px;margin-bottom:4px}
+.measures{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin:24px 0 16px}
+.m{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 18px 16px;display:flex;flex-direction:column;gap:6px;transition:transform .25s,border-color .25s}
+.m:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
+.m b{font:600 34px/1.1 Fraunces,Georgia,serif;letter-spacing:-.02em;color:var(--accent)}
+.m span{font-size:14px;line-height:1.45}
+.m small{font:500 11px "JetBrains Mono",monospace;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-top:auto;padding-top:8px}
+.next{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:40px 0 0}
+.next a{font-weight:600;text-decoration:none}
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="../"><span class="mono">KS</span>Kuldeep Singh</a>
+    <nav><a href="../">Portfolio</a><a href="#question">Question</a><a href="#build">Build</a><a href="#gap">The gap</a><a href="#learned">What I learned</a></nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap hero">
+    <canvas id="mesh" aria-hidden="true"></canvas>
+    <div class="hero-grid">
+      <div>
+        <span class="eyebrow"><i></i>Artifact 2 · Research and storytelling</span>
+        <h1>The Open-Weight Race: four years of AI, told as <em>one race</em></h1>
+        <p class="lede">After ChatGPT, the best AI models lived behind a paywall. Then a model leaked, and a race started over who gets to give the weights away. Our group built an interactive timeline that follows that race from November 2022 to October 2026.</p>
+        <div class="byline">
+          <span class="chip"><b>For</b> managers and product people who explain AI trends to others</span>
+          <span class="chip"><b>Built with</b> HTML, CSS, JavaScript and 20 sources</span>
+          <span class="chip"><b>Team</b> my AIML-500 group</span>
+        </div>
+      </div>
+      <div class="device">
+        <div class="browser">
+          <div class="bar"><span></span><span></span><span></span><code>The Open-Weight Race</code></div>
+          <img src="../img/owr_hero.png" width="1440" height="900" alt="The title screen of The Open-Weight Race timeline">
+        </div>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat reveal spot"><b data-n="53">53</b><span>events, each with an exact date</span></div>
+      <div class="stat reveal spot"><b data-n="4">4</b><span>years covered, Nov 2022 to Oct 2026</span></div>
+      <div class="stat reveal spot"><b data-n="5">5</b><span>measurements of one gap</span></div>
+      <div class="stat reveal spot"><b data-n="20">20</b><span>sources listed on the page</span></div>
+    </div>
+  </div>
+
+  <div class="wrap narrow">
+    <section id="question" class="reveal">
+      <div class="sec-head"><span class="num">01</span><h2>The question</h2></div>
+      <p>A trained AI model is mostly a giant file of numbers called weights. Whoever holds the file can run the model, change it and build on it. In 2022 the best models were closed: you sent text to a company's servers and got an answer back. The race is about who gives that file away, and it matters for cost, privacy, safety and geopolitics.</p>
+      <p>The timeline separates three ideas that people mix up. Closed models are rented through an app or API. Open-weight models can be downloaded and run on your own computer. Fully open source models share the training data and code too, so anyone could rebuild them.</p>
+      <div class="pull">In 2023 the question was whether open models could keep up at all. By October 2026 the question is how long any closed lead lasts.<small>What the timeline argues</small></div>
+    </section>
+
+    <section id="build" class="reveal">
+      <div class="sec-head"><span class="num">02</span><h2>What we built</h2></div>
+      <p>Each of the 53 events has an exact date, who released it, a license tag, a plain-language description and a line called "why it matters." Filters let a reader follow the US thread, the China thread, models, policy or research. A scoreboard shows how long open models took to catch up with closed ones: about 12 months, then 16, then 4, in our pairings.</p>
+      <div class="frame"><iframe src="timeline.html" title="The Open-Weight Race, interactive timeline" loading="lazy"></iframe></div>
+      <p class="framenote">This is the live timeline. <a href="timeline.html">Open it full screen</a> to scroll through all 53 events.</p>
+      <div class="feat">
+        <div class="reveal"><b>Plain language first</b>The page explains "weights" in one short section before it lists a single event.</div>
+        <div class="reveal"><b>Exact dates</b>Every event has a day, a source and the organization behind it.</div>
+        <div class="reveal"><b>Made to explore</b>Filters, animation and a layout that reflows on a phone.</div>
+      </div>
+    </section>
+  </div>
+
+  <div class="wrap">
+    <section id="gap" class="reveal" style="padding-bottom:0">
+      <div class="narrow" style="margin:0 auto">
+        <div class="sec-head"><span class="num">03</span><h2>Who measures matters</h2></div>
+        <p>The most useful thing we found was that the gap between the US and China in AI has no single answer. Five measurements from four organizations gave five different pictures.</p>
+      </div>
+      <div class="measures">
+        <div class="m reveal"><b>2.7%</b><span>Top US model ahead of the top Chinese model on the Arena leaderboard, March 2026</span><small>Stanford AI Index</small></div>
+        <div class="m reveal"><b>3.3%</b><span>Closed models ahead of open models, up from 0.5% in August 2024</span><small>Stanford AI Index</small></div>
+        <div class="m reveal"><b>~7 months</b><span>Average lag of Chinese models behind the US frontier since 2023, ranging from 4 to 14</span><small>Epoch AI, Jan 2026</small></div>
+        <div class="m reveal"><b>~4 months</b><span>Best open-weight models behind the best closed ones since January 2026</span><small>Epoch AI, May 2026</small></div>
+        <div class="m reveal"><b>~8 months</b><span>DeepSeek V4 Pro behind the US frontier, from government tests, some of them private</span><small>CAISI, NIST, May 2026</small></div>
+      </div>
+      <div class="narrow" style="margin:0 auto">
+        <p>These numbers don't contradict each other. A leaderboard percentage, an index measured in months and a private government test measure different things, so they can't be compared directly. Critics also questioned the private tests behind the eight-month figure. When I quote a gap now, I ask what was measured and by whom.</p>
+      </div>
+    </section>
+  </div>
+
+  <div class="wrap narrow">
+    <section class="reveal">
+      <div class="sec-head"><span class="num">04</span><h2>How we kept it honest</h2></div>
+      <ul class="learn">
+        <li>Each catch-up pair is approximate and based on what each lab reported on its own benchmarks. The page says so next to the chart.</li>
+        <li>The page ends with 20 sources, from lab announcements and papers to Epoch AI, Stanford and NIST.</li>
+        <li>When we reread the timeline, we found two August 2025 releases listed a day out of order, and fixed it.</li>
+        <li>Our first timeline, covering 1950 to 2022, had months only. Once we noticed, we added exact dates to all 38 events and held this one to the same standard.</li>
+      </ul>
+    </section>
+
+    <section id="learned" class="reveal">
+      <div class="sec-head"><span class="num">05</span><h2>What I took from it</h2></div>
+      <ul class="learn">
+        <li>Sources disagree, and the disagreement is part of the story. I'd rather show five numbers and explain them than pick one.</li>
+        <li>Defining one word, "weights," up front made the other 53 events easier to read.</li>
+        <li>A timeline is a design problem as much as a research problem. The order of events, the filters and the gap chart decide what a reader remembers.</li>
+        <li>Next time I'd add a "last checked" date to every claim, since this topic changes every month.</li>
+      </ul>
+      <div class="next"><a href="../f1-work-guide/">&larr; Artifact 1: F-1 Work Guide</a><a href="../">Back to the portfolio &rarr;</a></div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap narrow">
+    Group project for AIML-500 Machine Learning Fundamentals (instructor: Dr. Sandra Kay Metzger) at Indiana Wesleyan University, fall 2026. Built by Kuldeep Singh with the AIML-500 group.
+  </div>
+</footer>
+<script src="../assets/site.js"></script>
+</body>
+</html>
