@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Neural Networks, Explained · Kuldeep Singh</title>
+<meta name="description" content="An interactive explanation of neural networks for beginners, built around one everyday decision: should I take an umbrella?">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<style>
+.lab{background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:22px;margin:22px 0 10px}
+.lab-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px}
+@media (max-width:720px){.lab-grid{grid-template-columns:minmax(0,1fr)}}
+.lab h4{margin:0 0 10px;font:600 12px "JetBrains Mono",monospace;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.sl{display:grid;grid-template-columns:96px minmax(0,1fr) 44px;align-items:center;gap:10px;margin-bottom:12px;font-size:14.5px}
+.sl output{font:500 13px "JetBrains Mono",monospace;text-align:right;color:var(--muted)}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.sl.w input[type=range]{accent-color:var(--accent2)}
+.meter{margin-top:6px}
+.track{position:relative;height:22px;border-radius:11px;background:var(--bg2);border:1px solid var(--line);overflow:visible}
+.fill{position:absolute;left:0;top:0;bottom:0;border-radius:11px;background:linear-gradient(90deg,var(--accent2),var(--accent));transition:width .25s ease}
+.line{position:absolute;top:-6px;bottom:-6px;width:2px;background:var(--ink)}
+.line span{position:absolute;top:-20px;left:-30px;width:62px;white-space:nowrap;text-align:center;font:500 11px "JetBrains Mono",monospace;color:var(--muted)}
+.verdict{display:flex;align-items:center;gap:14px;margin-top:20px;padding:14px 16px;border-radius:12px;background:var(--bg2);border:1px solid var(--line)}
+.verdict .ico{font-size:34px;line-height:1;transition:transform .35s cubic-bezier(.2,.7,.2,1)}
+.verdict.no .ico{transform:rotate(-25deg) scale(.85);opacity:.45}
+.verdict b{font-size:17px}
+.verdict small{display:block;color:var(--muted);font-size:13.5px}
+.days{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px;margin:6px 0 14px}
+@media (max-width:640px){.days{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.day{border:1px solid var(--line);border-radius:10px;padding:8px 6px;text-align:center;font-size:12px;background:var(--bg2);transition:border-color .25s,transform .25s}
+.day.cur{border-color:var(--accent);transform:translateY(-3px)}
+.day .e{font-size:20px;display:block}
+.day .r{display:block;margin-top:2px;font:500 10.5px "JetBrains Mono",monospace;color:var(--muted)}
+.day.ok{box-shadow:inset 0 -3px 0 var(--pass)}
+.day.bad{box-shadow:inset 0 -3px 0 #e5484d}
+.wbars{display:grid;gap:10px;margin:8px 0 14px}
+.wb{display:grid;grid-template-columns:96px minmax(0,1fr) 44px;align-items:center;gap:10px;font-size:14px}
+.wb .t{height:12px;border-radius:6px;background:var(--bg2);border:1px solid var(--line);overflow:hidden}
+.wb .t i{display:block;height:100%;background:var(--accent2);transition:width .45s cubic-bezier(.2,.7,.2,1)}
+.wb output{font:500 13px "JetBrains Mono",monospace;text-align:right;color:var(--muted)}
+.ctrl{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.ctrl button{font:600 14px Inter,sans-serif;padding:10px 16px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;transition:transform .2s,border-color .2s}
+.ctrl button:hover{transform:translateY(-2px);border-color:var(--accent)}
+.ctrl button.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.log{margin-top:14px;min-height:48px;padding:12px 14px;border-radius:12px;background:var(--bg2);border:1px solid var(--line);font-size:14.5px}
+.score{font:500 13px "JetBrains Mono",monospace;color:var(--muted)}
+.net svg{width:100%;height:auto;display:block}
+.pulse{stroke:var(--accent);stroke-width:2.5;fill:none;stroke-dasharray:6 150;animation:run 2.4s linear infinite}
+@keyframes run{from{stroke-dashoffset:156}to{stroke-dashoffset:0}}
+@media (prefers-reduced-motion:reduce){.pulse{animation:none;stroke-dasharray:none;opacity:.35}}
+.next{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:40px 0 0}
+.next a{font-weight:600;text-decoration:none}
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="../"><span class="mono">KS</span>Kuldeep Singh</a>
+    <nav><a href="../">Portfolio</a><a href="#try">Try it</a><a href="#learn">Watch it learn</a><a href="#deep">Go deep</a><a href="#learned">What I learned</a></nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap hero">
+    <canvas id="mesh" aria-hidden="true"></canvas>
+    <div class="hero-grid">
+      <div>
+        <span class="eyebrow"><i></i>Artifact 3 · Teaching a technical idea</span>
+        <h1>Neural networks, explained with <em>an umbrella</em></h1>
+        <p class="lede">Most explanations of neural networks start with math. This one starts with a decision everyone makes: should I take an umbrella today? I first wrote it as a class discussion post, then turned it into something you can play with.</p>
+        <div class="byline">
+          <span class="chip"><b>For</b> students and teammates meeting AI for the first time</span>
+          <span class="chip"><b>Built with</b> HTML, CSS and JavaScript</span>
+          <span class="chip"><b>Started as</b> an AIML-500 discussion post</span>
+        </div>
+      </div>
+      <div class="device">
+        <div class="browser">
+          <div class="bar"><span></span><span></span><span></span><code>The class version</code></div>
+          <img src="../img/nn_umbrella.png" width="3200" height="2000" alt="Three-panel diagram: one neuron weighing clouds, forecast and humidity; a guess, check and nudge training loop; and layers going from pixels to edges to shapes to a face">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap narrow">
+    <section id="try" class="reveal">
+      <div class="sec-head"><span class="num">01</span><h2>Try one neuron</h2></div>
+      <p>The left side is what today looks like. The right side is how much the neuron trusts each clue, which is called a weight. The neuron multiplies each clue by its weight, adds them up, and takes the umbrella if the total crosses the line. That last check is the activation function. Move the sliders.</p>
+      <div class="lab">
+        <div class="lab-grid">
+          <div>
+            <h4>Today's clues</h4>
+            <div class="sl"><label for="x0">Dark clouds</label><input id="x0" type="range" min="0" max="1" step=".05" value=".8"><output for="x0"></output></div>
+            <div class="sl"><label for="x1">Forecast</label><input id="x1" type="range" min="0" max="1" step=".05" value=".3"><output for="x1"></output></div>
+            <div class="sl"><label for="x2">Humidity</label><input id="x2" type="range" min="0" max="1" step=".05" value=".5"><output for="x2"></output></div>
+          </div>
+          <div>
+            <h4>Weights (trust)</h4>
+            <div class="sl w"><label for="w0">Clouds</label><input id="w0" type="range" min="0" max="1" step=".05" value=".5"><output for="w0"></output></div>
+            <div class="sl w"><label for="w1">Forecast</label><input id="w1" type="range" min="0" max="1" step=".05" value=".2"><output for="w1"></output></div>
+            <div class="sl w"><label for="w2">Humidity</label><input id="w2" type="range" min="0" max="1" step=".05" value=".3"><output for="w2"></output></div>
+          </div>
+        </div>
+        <h4 style="margin-top:14px">Total vs. the line</h4>
+        <div class="meter"><div class="track"><div class="fill" id="fill"></div><div class="line" id="line"><span>line 0.5</span></div></div></div>
+        <div class="verdict" id="verdict"><span class="ico" aria-hidden="true">☂</span><div><b id="vtext"></b><small id="vmath"></small></div></div>
+      </div>
+    </section>
+
+    <section id="learn" class="reveal">
+      <div class="sec-head"><span class="num">02</span><h2>Watch it learn</h2></div>
+      <p>Here are eight past days and whether it actually rained. This neuron starts out trusting the forecast much more than the clouds. Press Next day: it guesses, checks the real answer, and nudges its weights after every mistake. That loop is training. Keep going until it gets all eight right.</p>
+      <div class="lab">
+        <div class="days" id="days"></div>
+        <p class="score" style="margin:0 0 12px">Under each day: clouds, forecast and humidity, from 0 to 1.</p>
+        <div class="wbars" id="wbars"></div>
+        <div class="ctrl"><button class="primary" id="step">Next day</button><button id="round">Run a full round</button><button id="reset">Start over</button><span class="score" id="score"></span></div>
+        <div class="log" id="log" aria-live="polite">Press Next day to start.</div>
+      </div>
+    </section>
+
+    <section id="deep" class="reveal">
+      <div class="sec-head"><span class="num">03</span><h2>Stack them and it gets deep</h2></div>
+      <p>One neuron can only make one simple call. Put many of them side by side and you get a layer. Feed one layer's answers into the next and you get a network. In a photo, the first layer might learn to spot edges, the next combines edges into shapes like eyes and noses, and a later layer combines shapes into a whole face. Nobody tells it what an edge or an eye is. It finds those patterns because they help it get the answers right. Many layers is what "deep learning" means.</p>
+      <div class="lab net">
+        <svg viewBox="0 0 640 300" role="img" aria-label="A small network with signals flowing from pixels to edges to shapes to a face">
+          <g stroke="var(--line)" stroke-width="1.5" fill="none" id="edges"></g>
+          <g id="pulses"></g>
+          <g id="nodes"></g>
+          <g font-family="Inter" font-size="14" font-weight="600" text-anchor="middle" fill="var(--muted)">
+            <text x="80" y="290">pixels</text><text x="250" y="290">edges</text><text x="420" y="290">shapes</text><text x="570" y="290">face</text>
+          </g>
+        </svg>
+      </div>
+    </section>
+
+    <section class="reveal">
+      <div class="sec-head"><span class="num">04</span><h2>Where the umbrella analogy breaks</h2></div>
+      <p>Every analogy leaves something out, so here's what this one gets wrong. In a real network nobody picks the weights. Training sets all of them, and a large network has millions. Real activation functions are also usually gradual curves instead of a hard yes-or-no switch, so the network can tell whether a small nudge made its guess a little better or a little worse. The demo above uses the hard switch because it's easier to see, and that's a choice I'd explain to anyone going further.</p>
+    </section>
+
+    <section class="reveal">
+      <div class="sec-head"><span class="num">05</span><h2>How I built it for beginners</h2></div>
+      <p>The class version was text and one diagram. For the portfolio I added the two things text can't do: let readers set the weights themselves, and show training happen one mistake at a time.</p>
+      <ul class="learn">
+        <li>Chunking and progressive disclosure: one neuron first, then learning, then layers. No new term appears before the idea it names.</li>
+        <li>Interactive learning: the sliders and the training loop give instant feedback, so a reader can test their own guess.</li>
+        <li>One familiar story: every step reuses the umbrella, so readers never have to switch examples.</li>
+        <li>Honesty about limits: a whole section says where the analogy breaks.</li>
+      </ul>
+    </section>
+
+    <section id="learned" class="reveal">
+      <div class="sec-head"><span class="num">06</span><h2>What I took from it</h2></div>
+      <ul class="learn">
+        <li>The hardest part was deciding what to leave out of the first version. Bias terms, gradients and the math behind training all wait until the reader has the basic idea.</li>
+        <li>An analogy needs a section on where it breaks, or readers carry the wrong picture forward.</li>
+        <li>The training data had to be designed too. The eight days are chosen so the neuron visibly learns to trust the clouds over the forecast.</li>
+        <li>Next I'd test it with someone outside tech and watch where they get stuck, which is the feedback loop the lesson recommends.</li>
+      </ul>
+      <div class="next"><a href="../open-weight-race/">&larr; Artifact 2: The Open-Weight Race</a><a href="../">Back to the portfolio &rarr;</a></div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap narrow">
+    Built by Kuldeep Singh from his AIML-500 Machine Learning Fundamentals discussion post (instructor: Dr. Sandra Kay Metzger) at Indiana Wesleyan University, fall 2026.
+  </div>
+</footer>
+<script src="../assets/site.js"></script>
+<script>
+(function(){
+var T=.5,$=function(id){return document.getElementById(id)};
+/* playground */
+function upd(){
+  var x=[0,1,2].map(function(i){return +$('x'+i).value}),w=[0,1,2].map(function(i){return +$('w'+i).value});
+  ['x0','x1','x2','w0','w1','w2'].forEach(function(id){$(id).nextElementSibling.textContent=(+$(id).value).toFixed(2)});
+  var s=x[0]*w[0]+x[1]*w[1]+x[2]*w[2],max=1.5;
+  $('fill').style.width=Math.min(s/max,1)*100+'%';$('line').style.left=(T/max*100)+'%';
+  var yes=s>T;$('verdict').classList.toggle('no',!yes);
+  $('vtext').textContent=yes?'Take the umbrella':'Leave it at home';
+  $('vmath').textContent=x[0].toFixed(2)+'×'+w[0].toFixed(2)+' + '+x[1].toFixed(2)+'×'+w[1].toFixed(2)+' + '+x[2].toFixed(2)+'×'+w[2].toFixed(2)+' = '+s.toFixed(2)+(yes?' (over 0.5)':' (under 0.5)');
+}
+['x0','x1','x2','w0','w1','w2'].forEach(function(id){$(id).addEventListener('input',upd)});upd();
+/* training */
+var D=[[.9,.8,.7,1],[.2,.9,.3,0],[.8,.2,.4,1],[.3,.7,.4,0],[.7,.6,.3,1],[.1,.2,.8,0],[.9,.3,.5,1],[.4,.8,.2,0]];
+var names=['Clouds','Forecast','Humidity'],lr=.3,w,i,correct,round,done;
+function reset(){w=[.1,.6,.3];i=0;correct=0;round=1;done=false;draw(-1);$('log').textContent='Press Next day to start.';$('score').textContent='Round 1';}
+function draw(cur,res){
+  $('days').innerHTML=D.map(function(d,k){var c='day'+(k===cur?' cur':'')+(res&&res[k]===1?' ok':'')+(res&&res[k]===0?' bad':'');return '<div class="'+c+'"><span class="e">'+(d[3]?'🌧':'☀')+'</span>Day '+(k+1)+'<span class="r">'+d.slice(0,3).map(function(v){return v.toFixed(1)}).join(' ')+'</span></div>'}).join('');
+  $('wbars').innerHTML=w.map(function(v,k){return '<div class="wb"><span>'+names[k]+'</span><div class="t"><i style="width:'+Math.min(v,1)*100+'%"></i></div><output>'+v.toFixed(2)+'</output></div>'}).join('');
+}
+var marks=[];
+function step(){
+  if(done){return}
+  var d=D[i],s=d[0]*w[0]+d[1]*w[1]+d[2]*w[2],g=s>T?1:0,y=d[3],msg;
+  if(g===y){correct++;marks[i]=1;msg='Day '+(i+1)+': guessed '+(g?'umbrella':'no umbrella')+' and '+(y?'it rained':'it stayed dry')+'. Right, so no change.';}
+  else{marks[i]=0;var old=w.slice();w=w.map(function(v,k){return Math.max(0,v+lr*(y-g)*d[k])});
+    var big=[0,1,2].sort(function(a,b){return Math.abs(w[b]-old[b])-Math.abs(w[a]-old[a])})[0];
+    msg='Day '+(i+1)+': guessed '+(g?'umbrella':'no umbrella')+' but '+(y?'it rained':'it stayed dry')+'. Wrong, so it '+(y?'raises':'lowers')+' every weight for the clues it saw, most of all '+names[big].toLowerCase()+'.';}
+  draw(i,marks);$('log').textContent=msg;i++;
+  if(i===D.length){
+    if(correct===D.length){done=true;$('log').textContent=msg+' Round '+round+': all 8 right. Training is done, and it now trusts the clouds most.';$('score').textContent='Round '+round+': 8/8';return}
+    $('score').textContent='Round '+round+': '+correct+'/8';round++;i=0;correct=0;marks=[];
+  }else{$('score').textContent='Round '+round+': '+correct+'/'+i;}
+}
+$('step').addEventListener('click',step);
+$('round').addEventListener('click',function(){var n=D.length-i;for(var k=0;k<n&&!done;k++)step()});
+$('reset').addEventListener('click',function(){marks=[];reset()});
+reset();
+/* layers */
+var L=[[80,[60,140,220]],[250,[40,110,180,250]],[420,[80,150,220]],[570,[150]]],e='',p='',n='',k=0;
+for(var a=0;a<L.length-1;a++)L[a][1].forEach(function(y1){L[a+1][1].forEach(function(y2){var d='M'+L[a][0]+' '+y1+' L'+L[a+1][0]+' '+y2;e+='<path d="'+d+'"/>';if((k++)%2===0)p+='<path class="pulse" d="'+d+'" style="animation-delay:'+((k%7)*.3+a*.5)+'s"/>'})});
+L.forEach(function(l,a){l[1].forEach(function(y){n+='<circle cx="'+l[0]+'" cy="'+y+'" r="'+(a===3?22:15)+'" fill="'+(a===0?'color-mix(in srgb,var(--accent2) 18%,var(--surface))':a===3?'var(--ink)':'color-mix(in srgb,var(--accent) 16%,var(--surface))')+'" stroke="'+(a===0?'var(--accent2)':'var(--accent)')+'" stroke-width="2"/>'})});
+$('edges').innerHTML=e;$('pulses').innerHTML=p;$('nodes').innerHTML=n;
+})();
+</script>
+</body>
+</html>
