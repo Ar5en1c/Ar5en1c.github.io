@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Where Bias Hides · Kuldeep Singh</title>
+<meta name="description" content="An interactive guide for small AI teams: four places human bias slips into an AI product, with three things you can try yourself.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<style>
+.lab{background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:22px;margin:22px 0 10px}
+.lab h4{margin:0 0 10px;font:600 12px "JetBrains Mono",monospace;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.sl{display:grid;grid-template-columns:150px minmax(0,1fr) 64px;align-items:center;gap:10px;margin-bottom:12px;font-size:14.5px}
+@media (max-width:560px){.sl{grid-template-columns:minmax(0,1fr) 56px}.sl label{grid-column:1/-1}}
+.sl output{font:500 13px "JetBrains Mono",monospace;text-align:right;color:var(--muted)}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.users{display:flex;align-items:flex-end;gap:4px;height:130px;margin:6px 0 4px;padding:8px 8px 0;border-radius:12px;background:var(--bg2);border:1px solid var(--line)}
+.users i{flex:1;min-width:0;border-radius:4px 4px 0 0;background:var(--accent2);transition:height .2s ease}
+.users i.big{background:var(--accent)}
+.cap{font:500 11px "JetBrains Mono",monospace;color:var(--muted);margin:0 0 14px}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:6px}
+@media (max-width:560px){.stats{grid-template-columns:minmax(0,1fr)}}
+.st{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--bg2)}
+.st b{display:block;font:600 24px Fraunces,Georgia,serif;letter-spacing:-.01em}
+.st span{font-size:13px;color:var(--muted)}
+.st.hot b{color:var(--accent)}
+.log{margin-top:14px;padding:12px 14px;border-radius:12px;background:var(--bg2);border:1px solid var(--line);font-size:14.5px}
+.row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;margin-top:10px}
+@media (max-width:640px){.row2{grid-template-columns:minmax(0,1fr)}}
+.gauge{margin:6px 0 4px}
+.gauge .t{position:relative;height:26px;border-radius:13px;background:var(--bg2);border:1px solid var(--line);overflow:hidden}
+.gauge .t i{position:absolute;left:0;top:0;bottom:0;border-radius:13px;background:linear-gradient(90deg,var(--accent2),var(--accent));transition:width .35s cubic-bezier(.2,.7,.2,1)}
+.gauge .n{display:flex;justify-content:space-between;font:500 12px "JetBrains Mono",monospace;color:var(--muted);margin-top:6px}
+.big-n{font:600 38px Fraunces,Georgia,serif;letter-spacing:-.02em;color:var(--accent);line-height:1}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.tabs button{font:600 14px Inter,sans-serif;padding:10px 16px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;transition:transform .2s,border-color .2s}
+.tabs button:hover{transform:translateY(-2px);border-color:var(--accent)}
+.tabs button[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.bar{display:grid;grid-template-columns:150px minmax(0,1fr) 56px;align-items:center;gap:10px;margin:10px 0;font-size:14px}
+@media (max-width:560px){.bar{grid-template-columns:minmax(0,1fr) 56px}.bar>span:first-child{grid-column:1/-1}}
+.bar .t{height:14px;border-radius:7px;background:var(--bg2);border:1px solid var(--line);overflow:hidden}
+.bar .t i{display:block;height:100%;background:var(--accent2);transition:width .45s cubic-bezier(.2,.7,.2,1)}
+.bar .t i.warm{background:var(--accent)}
+.bar output{font:500 13px "JetBrains Mono",monospace;text-align:right;color:var(--muted)}
+.checks{width:100%;border-collapse:collapse;font-size:14.5px;margin:6px 0 20px}
+.checks th,.checks td{text-align:left;padding:12px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+.checks th{font:600 12px "JetBrains Mono",monospace;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.checks td:first-child{font-weight:600;white-space:nowrap}
+@media (max-width:700px){.checks,.checks tbody,.checks tr,.checks td{display:block;width:100%}.checks thead{display:none}.checks tr{padding:12px 0;border-bottom:1px solid var(--line)}.checks td{border:0;padding:3px 0}.checks td:first-child{white-space:normal;font-size:16px}}
+.hero-viz{background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:22px}
+.hero-viz svg{width:100%;height:auto;display:block}
+.src-list{font-size:14px;color:var(--muted);padding-left:18px}
+.src-list li{margin:8px 0}
+.src-list a{color:var(--accent2)}
+.next{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:40px 0 0}
+.next a{font-weight:600;text-decoration:none}
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="../"><span class="mono">KS</span>Kuldeep Singh</a>
+    <nav><a href="../">Portfolio</a><a href="#average">Average</a><a href="#test">Testing</a><a href="#label">Labels</a><a href="#checks">Checklist</a></nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap hero">
+    <canvas id="mesh" aria-hidden="true"></canvas>
+    <div class="hero-grid">
+      <div>
+        <span class="eyebrow"><i></i>Artifact 4 · Making ethics practical</span>
+        <h1>Where bias hides in an AI product, and <em>how to catch it</em></h1>
+        <p class="lede">Most writing about AI bias is aimed at researchers. This page is for the people who actually ship the product: a founder, a small team, someone who tests on the laptop they have. I started from my AIML-500 discussion post on human bias and turned it into three things you can try, using examples from my own work and from published studies.</p>
+        <div class="byline">
+          <span class="chip"><b>For</b> founders and small teams building AI products</span>
+          <span class="chip"><b>Built with</b> HTML, CSS and JavaScript</span>
+          <span class="chip"><b>Started as</b> an AIML-500 discussion post</span>
+        </div>
+      </div>
+      <div class="hero-viz" aria-label="Two bars: an average of 8.3 applications per user and a median of 2">
+        <svg viewBox="0 0 420 250" role="img" aria-label="A bar for the average, 8.3, and a much shorter bar for the median, 2, with the note that one user made 52.7 percent of all applications">
+          <g font-family="Inter" font-size="13" fill="var(--muted)">
+            <text x="20" y="28" font-weight="600" fill="var(--ink)">One dashboard, two numbers</text>
+            <text x="20" y="70">Average</text>
+            <text x="20" y="130">Median</text>
+          </g>
+          <rect x="90" y="52" width="270" height="26" rx="13" fill="var(--bg2)" stroke="var(--line)"/>
+          <rect x="90" y="52" width="270" height="26" rx="13" fill="var(--accent)"/>
+          <rect x="90" y="112" width="270" height="26" rx="13" fill="var(--bg2)" stroke="var(--line)"/>
+          <rect x="90" y="112" width="65" height="26" rx="13" fill="var(--accent2)"/>
+          <g font-family="JetBrains Mono" font-size="13" font-weight="500" fill="var(--ink)">
+            <text x="368" y="70">8.3</text><text x="368" y="130">2</text>
+          </g>
+          <text x="20" y="188" font-family="Inter" font-size="13" fill="var(--muted)">Applications per active user in my product, June 2026.</text>
+          <text x="20" y="210" font-family="Inter" font-size="13" fill="var(--muted)">One user with 399 applications made up 52.7% of the total.</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap narrow">
+    <section class="reveal">
+      <div class="sec-head"><span class="num">00</span><h2>The idea in one minute</h2></div>
+      <p>AI learns from data that people choose, label, test and read. Our course lists those as five places bias gets in: data selection, labeling, algorithm design, testing, and the way results are interpreted. I can't show you all five with a slider, but I've hit three of them in my own product or seen them clearly in published studies, so those are the three below. Each one is something you can try before you read the explanation.</p>
+    </section>
+
+    <section id="average" class="reveal">
+      <div class="sec-head"><span class="num">01</span><h2>Your average can hide most of your users</h2></div>
+      <p>This is interpretation, the last stage. Below are 20 made-up users and how many job applications each one sent. Nineteen of them are fixed. Drag the slider to change how many the heaviest user sent, and watch what the average does while the median barely moves.</p>
+      <div class="lab">
+        <div class="sl"><label for="heavy">Heaviest user's applications</label><input id="heavy" type="range" min="5" max="400" step="1" value="300"><output for="heavy"></output></div>
+        <div class="users" id="users" role="img" aria-label="Bars for 20 users, with one very tall bar for the heaviest user"></div>
+        <p class="cap">Illustrative numbers, not real users. Each bar is one user.</p>
+        <div class="stats">
+          <div class="st hot"><b id="mean"></b><span>average per user</span></div>
+          <div class="st"><b id="median"></b><span>median user</span></div>
+          <div class="st"><b id="share"></b><span>of all applications from the top user</span></div>
+        </div>
+        <div class="log" id="avgnote"></div>
+      </div>
+      <p>This happened to me for real in June 2026. My dashboard said 8.3 applications per active user, but the median was 2, because one user with 399 applications made up 52.7% of the total. I had been tracking a number that described one person. Now I report the median next to the average and look at groups separately, so a heavy user or the biggest group can't speak for everyone.</p>
+    </section>
+
+    <section id="test" class="reveal">
+      <div class="sec-head"><span class="num">02</span><h2>You only test on who you are</h2></div>
+      <p>This is testing. In June 2026 I moved the AI in my Chrome extension into the user's browser. About 39% of my users were on Windows, and I built it without a Windows machine. Many Windows graphics cards couldn't run the model, and I found out when friends told me. Try a different release plan: send the update to a small group first, as long as that group looks like your real users.</p>
+      <div class="lab">
+        <div class="sl"><label for="pilot">Release to this share first</label><input id="pilot" type="range" min="1" max="100" step="1" value="5"><output for="pilot"></output></div>
+        <div class="gauge"><div class="t"><i id="exp"></i></div><div class="n"><span>0%</span><span>share of all users who hit the bug before it's fixed</span><span>39%</span></div></div>
+        <p><span class="big-n" id="expn"></span></p>
+        <div class="log" id="pnote"></div>
+      </div>
+      <p>The same blind spot shows up at a much larger scale. Buolamwini and Gebru (2018) found that common face-analysis benchmarks were mostly lighter-skinned faces. When they tested three commercial gender classifiers on a balanced set, the systems misclassified darker-skinned women up to 34.7% of the time, against at most 0.8% for lighter-skinned men.</p>
+      <div class="lab">
+        <h4>Error rate, three commercial systems</h4>
+        <div class="bar"><span>Lighter-skinned men</span><div class="t"><i style="width:.8%"></i></div><output>0.8%</output></div>
+        <div class="bar"><span>Darker-skinned women</span><div class="t"><i class="warm" style="width:34.7%"></i></div><output>34.7%</output></div>
+        <p class="cap" style="margin:6px 0 0">Each is the highest rate among the three systems for that group.</p>
+      </div>
+      <p>My Windows miss left some users with a model that wouldn't run. Theirs costs people real consequences. The cause is the same: the people building and testing the system didn't look like everyone who would use it.</p>
+    </section>
+
+    <section id="label" class="reveal">
+      <div class="sec-head"><span class="num">03</span><h2>A label can quietly measure the wrong thing</h2></div>
+      <p>This is labeling, and I think it's the sneakiest one. Obermeyer and colleagues (2019) studied a health-care algorithm used to decide which patients get extra help. It predicted each patient's future cost, as a stand-in for how sick they were. But less money had been spent on Black patients with the same needs, so at the same risk score, Black patients were considerably sicker. Switch the label below and see what changes.</p>
+      <div class="lab">
+        <div class="tabs" role="group" aria-label="Choose what the algorithm predicts">
+          <button id="lab-cost" aria-pressed="true">Predict cost</button>
+          <button id="lab-need" aria-pressed="false">Predict health needs</button>
+        </div>
+        <div class="bar"><span>Black patients flagged for extra help</span><div class="t"><i class="warm" id="labbar" style="width:17.7%"></i></div><output id="labout">17.7%</output></div>
+        <div class="log" id="labnote"></div>
+      </div>
+      <p>The authors' estimate was that the change would raise that share from 17.7% to 46.5%. Cost looked like a reasonable stand-in, and it even looked accurate by some measures, so the problem was easy to miss. Before a model learns from any signal, such as spending, clicks or past approvals, I now write down what the signal really stands in for and who it might misrepresent.</p>
+    </section>
+
+    <section id="checks" class="reveal">
+      <div class="sec-head"><span class="num">04</span><h2>A checklist you can take to your team</h2></div>
+      <p>These are the five places from the course, each with one question to ask in a team meeting and the example from this page, where there is one.</p>
+      <table class="checks">
+        <thead><tr><th>Where it gets in</th><th>One question to ask</th><th>Seen here</th></tr></thead>
+        <tbody>
+          <tr><td>Data selection</td><td>Who is missing from the data we chose?</td><td>Face benchmarks that were mostly lighter-skinned faces</td></tr>
+          <tr><td>Labeling</td><td>What does this label really measure?</td><td>Health cost standing in for health needs</td></tr>
+          <tr><td>Algorithm design</td><td>What did we assume would be fair, and who agreed?</td><td>Not shown on this page</td></tr>
+          <tr><td>Testing</td><td>Which users can't we reproduce ourselves?</td><td>No Windows machine, 39% of users on Windows</td></tr>
+          <tr><td>Interpretation</td><td>Does this number describe most people, or one?</td><td>Average of 8.3, median of 2</td></tr>
+        </tbody>
+      </table>
+      <p>The hardest part is getting a team to ask these questions without feeling accused. A "bias audit" can sound like blame, so I would call it a quality check, start with one question on one release, share my own misses first, and give someone the job of disagreeing with me.</p>
+    </section>
+
+    <section class="reveal">
+      <div class="sec-head"><span class="num">05</span><h2>How I adapted it for this audience</h2></div>
+      <ul class="learn">
+        <li>The class post was written for classmates and a professor. This page is for founders and small teams, so it starts with a dashboard number everyone has seen instead of with definitions.</li>
+        <li>I replaced paragraphs of explanation with things to try. Each of the three sections lets the reader move something before reading the reasoning.</li>
+        <li>Every number is either from my own product or from a named study. The user chart is labeled as illustrative so no one mistakes it for data.</li>
+        <li>One example is from my own mistakes, on purpose. People take a lesson from "I got this wrong" more easily than from a warning.</li>
+      </ul>
+    </section>
+
+    <section id="learned" class="reveal">
+      <div class="sec-head"><span class="num">06</span><h2>What I took from it</h2></div>
+      <ul class="learn">
+        <li>Bias comes from several small choices that each looked reasonable at the time, so I'd treat the fix as a habit of asking questions instead of one audit.</li>
+        <li>My own examples were milder than the published ones, and I think that helps. Seeing the same pattern in a small product makes the big cases easier to believe.</li>
+        <li>The pilot model on this page is simple. It assumes the small group looks like all users and that someone reports the problem. Real teams would have to check both.</li>
+        <li>Next I'd show this to someone who isn't in tech and see which section they skip, which is the same feedback step I used for artifact 3.</li>
+      </ul>
+      <h3 style="margin-top:30px">Sources</h3>
+      <ol class="src-list">
+        <li>Buolamwini, J., &amp; Gebru, T. (2018). Gender shades: Intersectional accuracy disparities in commercial gender classification. <i>Proceedings of Machine Learning Research, 81</i>, 77-91. <a href="https://proceedings.mlr.press/v81/buolamwini18a.html">proceedings.mlr.press/v81/buolamwini18a</a></li>
+        <li>Mehrabi, N., Morstatter, F., Saxena, N., Lerman, K., &amp; Galstyan, A. (2021). A survey on bias and fairness in machine learning. <i>ACM Computing Surveys, 54</i>(6), Article 115. <a href="https://doi.org/10.1145/3457607">doi.org/10.1145/3457607</a></li>
+        <li>Obermeyer, Z., Powers, B., Vogeli, C., &amp; Mullainathan, S. (2019). Dissecting racial bias in an algorithm used to manage the health of populations. <i>Science, 366</i>(6464), 447-453. <a href="https://doi.org/10.1126/science.aax2342">doi.org/10.1126/science.aax2342</a></li>
+      </ol>
+      <div class="next"><a href="../neural-networks/">&larr; Artifact 3: Neural Networks</a><a href="../">Back to the portfolio &rarr;</a></div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap narrow">
+    Built by Kuldeep Singh from his AIML-500 Machine Learning Fundamentals discussion post (instructor: Dr. Sandra Kay Metzger) at Indiana Wesleyan University, fall 2026.
+  </div>
+</footer>
+<script src="../assets/site.js"></script>
+<script>
+(function(){
+var $=function(id){return document.getElementById(id)};
+/* 01 average vs median */
+var base=[1,1,1,2,2,2,2,2,3,3,3,4,4,5,5,6,8,9,12];
+function median(a){var s=a.slice().sort(function(x,y){return x-y}),m=s.length/2;return (s[m-1]+s[m])/2}
+function avg(){
+  var h=+$('heavy').value,all=base.concat([h]);
+  $('heavy').nextElementSibling.textContent=h;
+  var sum=all.reduce(function(a,b){return a+b},0),mean=sum/all.length,med=median(all),top=h/sum;
+  var max=Math.max.apply(null,all);
+  $('users').innerHTML=all.map(function(v,k){return '<i class="'+(k===all.length-1?'big':'')+'" style="height:'+Math.max(v/max*100,2)+'%" title="'+v+' applications"></i>'}).join('');
+  $('mean').textContent=mean.toFixed(1);$('median').textContent=med.toFixed(1);$('share').textContent=Math.round(top*100)+'%';
+  $('avgnote').textContent=h<=12?'With no standout user the average and the median agree, and either one describes the group.':'The median is '+med.toFixed(1)+', so half the users sent '+med.toFixed(0)+' or fewer. The average says '+mean.toFixed(1)+', a number almost nobody in this group actually sent.';
+}
+$('heavy').addEventListener('input',avg);avg();
+/* 02 pilot */
+var WIN=39;
+function pilot(){
+  var p=+$('pilot').value,exp=p/100*WIN;
+  $('pilot').nextElementSibling.textContent=p+'%';
+  $('exp').style.width=(exp/WIN*100)+'%';
+  $('expn').textContent=exp.toFixed(exp<10?1:0)+'%';
+  $('pnote').textContent=p===100?'Everyone gets it at once, which is what I did. All the Windows users (39% of the product) hit the bug before I heard about it.':'Only '+p+'% of users get the update first. If they look like all my users, about '+exp.toFixed(1)+'% of the whole user base would hit the bug before the first report and a fix.';
+}
+$('pilot').addEventListener('input',pilot);pilot();
+/* 03 label */
+function lab(need){
+  $('lab-cost').setAttribute('aria-pressed',!need);$('lab-need').setAttribute('aria-pressed',need);
+  $('labbar').style.width=(need?46.5:17.7)+'%';$('labout').textContent=need?'46.5%':'17.7%';
+  $('labnote').textContent=need?'Same patients, but the label is now how sick they are. The authors estimate the share flagged for help rises from 17.7% to 46.5%.':'The algorithm predicts spending. Because less had been spent on Black patients with the same needs, it scored them as healthier than they were.';
+}
+$('lab-cost').addEventListener('click',function(){lab(false)});$('lab-need').addEventListener('click',function(){lab(true)});lab(false);
+})();
+</script>
+</body>
+</html>
