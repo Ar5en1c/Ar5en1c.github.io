@@ -329,7 +329,12 @@ mark.bad{background:color-mix(in srgb,#e5484d 22%,transparent);color:inherit;pad
       </div>
     </section>
 
-    <section id="learned" class="reveal">
+        <section id="info" class="reveal">
+      <div class="sec-head"><span class="num">i</span><h2>Artifact information</h2></div>
+      <dl class="info"><div><dt>Artifact title</dt><dd>F-1 Work Guide: an AI assistant that answers only from sources it can cite</dd></div><div><dt>Introduction</dt><dd>International students get conflicting advice about when they can work. Our group built a chatbot that explains the general CPT and OPT rules in plain language and sends students to their school advisor for questions about their own case.</dd></div><div><dt>Description</dt><dd>A single-page chat app. A student picks their stage, asks a question and gets a short answer that ends with an official source. The knowledge base has 13 hand-written sections of about 2,500 words, and every fact carries its link and the date we checked it. The page also blocks ID numbers before they reach the AI.</dd></div><div><dt>Objective</dt><dd>Build an assistant whose answers can be checked, then prove with tests that it follows its own rules.</dd></div><div><dt>Process</dt><dd>We asked a general chatbot the same question three times to find what it misses, answered the lab's ten planning questions, wrote 14 tests before building, built the bot and page, and ran the tests. Thirteen passed on the first run. We fixed the one partial result with a new rule and re-ran the same test.</dd></div><div><dt>Tools and tech used</dt><dd>Claude, a hand-written knowledge base, HTML and JavaScript.</dd></div><div><dt>Unique value</dt><dd>The tests came first, and the most useful one failed in a way that was accurate but wrong for the reader. That led us to check what an answer implies as well as whether it is true.</dd></div><div><dt>Relevance</dt><dd>Any team building an assistant for people with high-stakes questions can use this approach to grounding, refusals, privacy and escalation to a human.</dd></div><div><dt>References</dt><dd>Facts in the knowledge base were checked on October 24, 2026 against USCIS, SEVP's Study in the States, the federal regulations, the Federal Register and IWU's own pages.</dd></div></dl>
+    </section>
+
+<section id="learned" class="reveal">
       <div class="sec-head"><span class="num">04</span><h2>What I took from it</h2></div>
       <ul class="learn spots">
         <li>Accuracy wasn't enough. Test 5 was factually correct and still the wrong answer for that student, so I now also check what an answer implies to the person reading it.</li>

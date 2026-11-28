@@ -176,3 +176,10 @@ mark.bad{background:color-mix(in srgb,#e5484d 22%,transparent);color:inherit;pad
 .reveal{opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
 .reveal.in{opacity:1;transform:none}
 @media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}.browser{transform:none}}
+
+.info{margin:0;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--surface)}
+.info>div{display:grid;grid-template-columns:170px minmax(0,1fr);gap:16px;padding:14px 18px;border-bottom:1px solid var(--line)}
+.info>div:last-child{border-bottom:0}
+.info dt{font:600 12px "JetBrains Mono",monospace;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding-top:3px}
+.info dd{margin:0;font-size:15px}
+@media (max-width:640px){.info>div{grid-template-columns:minmax(0,1fr);gap:4px}}
